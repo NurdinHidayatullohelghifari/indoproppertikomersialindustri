@@ -241,6 +241,13 @@
                                     <textarea id="pub-notes" rows="2" placeholder="Ketentuan zonasi industri, akses jalan kontainer 40ft, daya listrik..." class="w-full text-xs sm:text-sm px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50"></textarea>
                                 </div>
 
+                                <div>
+                                    <label for="pub-files" class="block text-xs font-semibold text-slate-700 mb-1">Upload Beberapa Foto / Dokumen</label>
+                                    <input type="file" id="pub-files" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 bg-slate-50 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-2 file:font-bold file:text-slate-950">
+                                    <p class="text-[11px] text-slate-500 mt-1">Pilih beberapa file dari HP/PC. Foto dan dokumen akan dilampirkan pada pengajuan.</p>
+                                    <div id="pub-files-preview" class="mt-2 grid grid-cols-3 gap-2"></div>
+                                </div>
+
                                 <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold text-sm rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-paper-plane"></i> Kirim Formulir Pengajuan
                                 </button>
@@ -589,21 +596,17 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
-                    <input type="text" id="login-user" value="admin" class="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
+                    <input type="text" id="login-user" autocomplete="username" placeholder="Masukkan username" class="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
                     <div class="relative">
-                        <input type="password" id="login-pass" value="admin123" class="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
+                        <input type="password" id="login-pass" autocomplete="current-password" placeholder="Masukkan password" class="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
                         <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200 text-xs">
                             <i id="pass-icon" class="fa-solid fa-eye"></i>
                         </button>
                     </div>
-                </div>
-
-                <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-                    <strong class="text-amber-400">Kredensial Default:</strong> Username: <code class="text-white bg-slate-800 px-1 rounded">admin</code> | Password: <code class="text-white bg-slate-800 px-1 rounded">admin123</code>
                 </div>
 
                 <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all">
@@ -776,6 +779,11 @@
                     <label class="block text-[11px] font-semibold text-slate-300 mb-1">URL Gambar Header</label>
                     <input type="text" id="l-image" placeholder="https://images.unsplash.com/..." class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
                 </div>
+                <div>
+                    <label for="l-files" class="block text-[11px] font-semibold text-slate-300 mb-1">Upload Beberapa Foto Properti</label>
+                    <input type="file" id="l-files" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
+                    <div id="l-files-preview" class="mt-2 grid grid-cols-3 gap-2"></div>
+                </div>
 
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-300 mb-1">Deskripsi Listing</label>
@@ -899,7 +907,30 @@
             bottom: { active: false, type: 'banner', imageUrl: '', linkUrl: '', htmlCode: '' }
         };
 
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+
+        function fileToDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({ name: file.name, type: file.type || 'application/octet-stream', size: file.size, dataUrl: reader.result });
+                reader.onerror = () => reject(new Error('Gagal membaca file: ' + file.name));
+                reader.readAsDataURL(file);
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            const uploadInput = document.getElementById('pub-files');
+            if (uploadInput) uploadInput.addEventListener('change', () => {
+                const preview = document.getElementById('pub-files-preview');
+                const files = Array.from(uploadInput.files);
+                preview.innerHTML = files.map(file => `<div class="rounded-lg border border-slate-200 p-2 text-[10px] text-slate-600 overflow-hidden"><i class="fa-solid ${file.type.startsWith('image/') ? 'fa-image' : 'fa-file-lines'} text-amber-600 mr-1"></i>${escapeHtml(file.name)}<div>${(file.size/1024).toFixed(0)} KB</div></div>`).join('');
+            });
+            const listingUpload = document.getElementById('l-files');
+            if (listingUpload) listingUpload.addEventListener('change', () => {
+                document.getElementById('l-files-preview').innerHTML = Array.from(listingUpload.files).map(file => `<div class="rounded-lg border border-slate-700 p-2 text-[10px] text-slate-300 overflow-hidden">${escapeHtml(file.name)}<div>${(file.size/1024).toFixed(0)} KB</div></div>`).join('');
+            });
             loadListings();
             loadSubmissions();
             loadAds();
@@ -1221,7 +1252,7 @@
             document.getElementById('property-modal').classList.add('hidden');
         }
 
-        function handlePublicSubmit(e) {
+        async function handlePublicSubmit(e) {
             e.preventDefault();
 
             const newEntry = {
@@ -1235,14 +1266,20 @@
                 price: document.getElementById('pub-price').value || '-',
                 area: document.getElementById('pub-area').value || '-',
                 notes: document.getElementById('pub-notes').value || '-',
+                attachments: await Promise.all(Array.from(document.getElementById('pub-files').files).map(fileToDataUrl)),
                 status: 'Baru',
                 isPosted: false
             };
 
             submissions.unshift(newEntry);
-            saveSubmissions();
+            try { saveSubmissions(); } catch (err) {
+                submissions.shift();
+                showToast('File terlalu besar untuk penyimpanan browser. Kurangi ukuran foto/dokumen.', 'error');
+                return;
+            }
 
             document.getElementById('public-submission-form').reset();
+            document.getElementById('pub-files-preview').innerHTML = '';
             showToast('Formulir berhasil terkirim! Tim kami akan menghubungi Anda.');
         }
 
@@ -1407,34 +1444,48 @@
             const sub = submissions.find(s => s.id === id);
             if (!sub) return;
 
+            if (sub.isPosted) {
+                showToast('Properti ini sudah diterbitkan ke katalog publik.', 'error');
+                return;
+            }
             if (confirm(`Konfirmasi dan terbitkan pengajuan titip jual (${sub.name}) ke Katalog Listing Properti Publik?`)) {
-                const areas = sub.area.split('/');
-                const ltVal = areas[0] ? areas[0].trim() : sub.area;
+                const areas = String(sub.area || '-').split('/');
+                const ltVal = areas[0] ? areas[0].trim() : (sub.area || '-');
                 const lbVal = areas[1] ? areas[1].trim() : '-';
+                const attachments = Array.isArray(sub.attachments) ? sub.attachments : [];
+                const firstPhoto = attachments.find(file => file && file.type && file.type.startsWith('image/') && file.dataUrl);
 
                 const newListing = {
-                    id: 'LIST-' + Math.floor(100 + Math.random() * 900),
+                    id: 'LIST-' + Date.now(),
                     title: `${sub.category} ${sub.location}`,
                     category: sub.category,
-                    statusTag: 'DIJUAL',
-                    price: sub.price.toLowerCase().includes('rp') ? sub.price : 'Rp ' + sub.price,
+                    statusTag: String(sub.type || 'DIJUAL').toUpperCase().includes('SEWA') ? 'DISEWAKAN' : 'DIJUAL',
+                    price: String(sub.price || '-').toLowerCase().includes('rp') ? sub.price : 'Rp ' + (sub.price || '-'),
                     location: sub.location,
                     lt: ltVal,
                     lb: lbVal,
-                    sertifikat: 'Terverifikasi',
-                    zonasi: 'Kawasan Industri',
-                    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
-                    desc: sub.notes && sub.notes !== '-' ? sub.notes : `Pengajuan titip jual terverifikasi atas nama ${sub.name}.`
+                    sertifikat: 'Menunggu pengecekan dokumen',
+                    zonasi: 'Perlu verifikasi',
+                    image: firstPhoto ? firstPhoto.dataUrl : 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+                    attachments,
+                    desc: sub.notes && sub.notes !== '-' ? sub.notes : `Pengajuan titip jual yang telah dikonfirmasi admin.`,
+                    approvedAt: new Date().toISOString()
                 };
 
                 listings.unshift(newListing);
-                saveListings();
+                try {
+                    saveListings();
+                } catch (err) {
+                    listings.shift();
+                    showToast('Gagal menerbitkan properti. Ukuran foto mungkin terlalu besar; kurangi ukuran file lalu coba lagi.', 'error');
+                    return;
+                }
 
                 sub.isPosted = true;
-                sub.status = 'Di-Follow Up';
+                sub.status = 'Selesai';
                 saveSubmissions();
-
-                showToast(`Properti berhasil diposting ke Listing Publik!`);
+                renderPublicListings();
+                showToast('Berhasil dikonfirmasi admin dan diterbitkan ke katalog website ini!');
             }
         }
 
@@ -1529,7 +1580,7 @@
             document.getElementById('add-listing-modal').classList.add('hidden');
         }
 
-        function handleAddListingSubmit(e) {
+        async function handleAddListingSubmit(e) {
             e.preventDefault();
             const newListing = {
                 id: 'LIST-' + Math.floor(100 + Math.random() * 900),
@@ -1543,11 +1594,16 @@
                 sertifikat: 'Terverifikasi',
                 zonasi: 'Kawasan Industri',
                 image: document.getElementById('l-image').value || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+                attachments: await Promise.all(Array.from(document.getElementById('l-files').files).map(fileToDataUrl)),
                 desc: document.getElementById('l-desc').value || '-'
             };
 
             listings.unshift(newListing);
-            saveListings();
+            try { saveListings(); } catch (err) {
+                listings.shift();
+                showToast('File terlalu besar untuk penyimpanan browser. Kurangi ukuran foto/dokumen.', 'error');
+                return;
+            }
             closeAddListingModal();
             showToast('Listing Properti Baru Berhasil Diterbitkan!');
         }
