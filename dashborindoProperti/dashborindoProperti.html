@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Lite - IndoProperti</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Font Awesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <div class="flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col transition-all duration-300 absolute md:relative z-30 -translate-x-full md:translate-x-0 h-full">
+      <!-- Brand Logo -->
+      <div class="h-16 flex items-center justify-between px-6 bg-slate-950 font-bold text-white text-lg border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="layout-dashboard" class="w-6 h-6 text-amber-400"></i>
+          <span>IndoProperti</span>
+        </div>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-amber-500 text-slate-950 font-semibold text-sm shadow-sm">
+          <i data-lucide="home" class="w-5 h-5"></i>
+          Dashboard
+        </a>
+        <a href="#admin-dashboard-section" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition font-medium text-sm">
+          <i data-lucide="building-2" class="w-5 h-5"></i>
+          Kelola Listing & Ads
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition font-medium text-sm">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          Pengguna
+        </a>
+        <button onclick="openPrivacyModal()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition font-medium text-sm text-left">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+          Kebijakan Privasi
+        </button>
+      </nav>
+
+      <!-- User Info Footer -->
+      <div class="p-4 border-t border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-slate-950 font-bold text-xs">
+            IP
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-white">Administrator</p>
+            <p class="text-[10px] text-slate-400">admin@indoproperti.com</p>
+          </div>
+        </div>
+        <button title="Keluar" class="text-slate-400 hover:text-rose-400 transition">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Overlay Mobile -->
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-20 hidden md:hidden"></div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+      
+      <!-- Top Header -->
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+          <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+          <h1 class="text-lg font-semibold text-slate-800">Dashboard Layanan Properti</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="openPrivacyModal()" class="text-xs text-slate-600 hover:text-slate-900 font-medium px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition hidden sm:inline-block">
+            <i class="fa-solid fa-shield-halved mr-1"></i> Privasi & Keamanan
+          </button>
+          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+          <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            ● Sistem Aktif
+          </span>
+        </div>
+      </header>
+
+      <!-- Main Body -->
+      <main class="p-4 md:p-8 space-y-6">
+
+        <!-- Stat Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Pengajuan</p>
+              <h3 class="text-xl font-bold text-slate-800 mt-1">128 Data</h3>
+              <span class="text-xs text-emerald-600 font-medium inline-flex items-center mt-1">
+                <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +12% bln ini
+              </span>
+            </div>
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+              <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Titip Jual</p>
+              <h3 class="text-xl font-bold text-slate-800 mt-1">84 Unit</h3>
+              <span class="text-xs text-emerald-600 font-medium inline-flex items-center mt-1">
+                <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +8% bln ini
+              </span>
+            </div>
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+              <i data-lucide="building" class="w-6 h-6"></i>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Cari Lahan</p>
+              <h3 class="text-xl font-bold text-slate-800 mt-1">44 Request</h3>
+              <span class="text-xs text-emerald-600 font-medium inline-flex items-center mt-1">
+                <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +5% bln ini
+              </span>
+            </div>
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+              <i data-lucide="search" class="w-6 h-6"></i>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Status Deal</p>
+              <h3 class="text-xl font-bold text-slate-800 mt-1">18 Selesai</h3>
+              <span class="text-xs text-amber-600 font-medium inline-flex items-center mt-1">
+                <i data-lucide="check-circle-2" class="w-3 h-3 mr-1"></i> Verified PPAT
+              </span>
+            </div>
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+              <i data-lucide="handshake" class="w-6 h-6"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart Section (JavaScript Chart.js) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-base font-bold text-slate-800">Statistik Pengajuan Properti</h3>
+                <p class="text-xs text-slate-500">Grafik tren bulanan titip jual dan pencarian lahan</p>
+              </div>
+              <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg font-medium">Tahun 2026</span>
+            </div>
+            <div class="relative h-64 w-full">
+              <canvas id="propertyChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-800 mb-1">CSV Tools & Data</h3>
+              <p class="text-xs text-slate-500 mb-4">Cadangkan atau impor data tabel pengajuan properti secara instan.</p>
+              
+              <div class="space-y-3">
+                <button onclick="exportTableToCSV('pengajuan_properti.csv')" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 shadow-sm">
+                  <i class="fa-solid fa-file-arrow-down"></i> Export Data ke CSV
+                </button>
+                <label class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2 cursor-pointer border border-slate-200">
+                  <i class="fa-solid fa-file-arrow-up"></i> Import Data dari CSV
+                  <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="importTableFromCSV(event)">
+                </label>
+              </div>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 mt-4">
+              <div class="flex items-start gap-2.5">
+                <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm mt-0.5"></i>
+                <p class="text-[11px] text-amber-800 leading-relaxed">Pastikan format kolom CSV sesuai dengan tabel admin sebelum melakukan impor.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Admin System Section -->
+        <div id="admin-dashboard-section" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+            
+            <!-- Top Bar Admin Header -->
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-xl shadow-sm border border-amber-200">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Dashboard Admin System</h2>
+                        <p class="text-xs text-slate-500">Kelola pengajuan masuk, katalog listing & manajemen kolom iklan ads</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <button onclick="alert('Buka modal tambah listing baru')" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-plus"></i> Tambah Listing Baru
+                    </button>
+                    <button onclick="alert('Buka modal pengaturan iklan ads')" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-rectangle-ad"></i> Kelola Iklan Ads
+                    </button>
+                </div>
+            </div>
+
+            <!-- Management Data Table Section -->
+            <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row gap-3 justify-between items-center">
+                    <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+                            <input type="text" id="admin-search" placeholder="Cari nama, lokasi, ID..." class="w-full text-xs pl-8 pr-3 py-2 bg-white border border-slate-200 text-slate-800 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                        </div>
+                        <select id="admin-filter-type" class="text-xs bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                            <option value="ALL">Semua Jenis Pengajuan</option>
+                            <option value="Titip Jual Properti">Titip Jual</option>
+                            <option value="Cari / Request Properti">Cari Lahan</option>
+                        </select>
+                        <select id="admin-filter-status" class="text-xs bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                            <option value="ALL">Semua Status</option>
+                            <option value="Baru">Baru</option>
+                            <option value="Di-Follow Up">Di-Follow Up</option>
+                            <option value="Selesai">Selesai</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
+                    </div>
+
+                    <div class="text-xs text-slate-500">
+                        Total Data: <span id="data-counter" class="font-bold text-slate-800">1</span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table id="adminTable" class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3.5">Waktu / ID</th>
+                                <th class="p-3.5">Foto / Dokumen</th>
+                                <th class="p-3.5">Nama & Klien</th>
+                                <th class="p-3.5">Jenis & Kategori</th>
+                                <th class="p-3.5">Lokasi Target</th>
+                                <th class="p-3.5">Harga / Luas</th>
+                                <th class="p-3.5">Status</th>
+                                <th class="p-3.5 text-center">Konfirmasi & Posting</th>
+                                <th class="p-3.5 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3.5 whitespace-nowrap">
+                                    <span class="font-mono text-[10px] text-amber-600 block font-bold">IP-101</span>
+                                    <span class="text-slate-400 text-[11px]">2026-10-07 14:20</span>
+                                </td>
+                                <td class="p-3.5">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=150&q=80" alt="Preview Foto" class="w-full h-full object-cover">
+                                        </div>
+                                        <span class="text-[10px] text-slate-500 font-medium bg-slate-100 px-1.5 py-0.5 rounded">+2 file</span>
+                                    </div>
+                                </td>
+                                <td class="p-3.5">
+                                    <div class="font-bold text-slate-800">H. Suryana</div>
+                                    <a href="https://wa.me/6281234567890" target="_blank" class="text-emerald-600 hover:underline font-semibold text-[11px]">
+                                        <i class="fa-brands fa-whatsapp"></i> 081234567890
+                                    </a>
+                                </td>
+                                <td class="p-3.5">
+                                    <span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-purple-100 text-purple-700">Titip Jual Properti</span>
+                                    <div class="text-slate-500 text-[11px] mt-0.5">Bangunan Pabrik</div>
+                                </td>
+                                <td class="p-3.5 font-medium text-slate-800">Paseh, Bandung</td>
+                                <td class="p-3.5">
+                                    <div class="font-bold text-amber-600">Rp 25 Miliar</div>
+                                    <div class="text-slate-500 text-[11px]">LT 12.000m²</div>
+                                </td>
+                                <td class="p-3.5">
+                                    <span class="px-2.5 py-1 rounded-lg font-semibold bg-amber-100 text-amber-800 text-[11px]">Baru</span>
+                                </td>
+                                <td class="p-3.5 text-center">
+                                    <button class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-[11px] shadow-sm">
+                                        <i class="fa-solid fa-upload"></i> Posting
+                                    </button>
+                                </td>
+                                <td class="p-3.5 text-center">
+                                    <button class="p-1.5 text-slate-400 hover:text-blue-600" title="Lihat Detail"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="p-1.5 text-slate-400 hover:text-red-600" title="Hapus" onclick="this.closest('tr').remove(); updateCounter();"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="mt-auto py-4 px-8 border-t border-slate-200 bg-white text-center text-xs text-slate-500">
+        &copy; 2026 IndoProperti Komersial & Industri. All rights reserved.
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Modal Kebijakan Privasi -->
+  <div id="privacyModal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-amber-500"></i> Kebijakan Privasi & Keamanan Data
+        </h3>
+        <button onclick="closePrivacyModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="text-xs text-slate-600 space-y-3 max-h-64 overflow-y-auto pr-2 leading-relaxed">
+        <p><strong>IndoProperti</strong> berkomitmen untuk melindungi privasi data klien, penjual, serta pembeli komersial dan industri.</p>
+        <p>1. <strong>Pengumpulan Data:</strong> Data yang Anda input melalui sistem (nama, kontak WhatsApp, dokumen, dan lokasi) hanya digunakan untuk keperluan verifikasi kepemilikan aset, pemasaran listing, serta layanan notaris/PPAT.</p>
+        <p>2. <strong>Keamanan CSV & Penyimpanan:</strong> Berkas ekspor/impor CSV dikelola secara lokal pada perangkat terotorisasi. Kami tidak membagikan database transaksi kepada pihak ketiga tanpa persetujuan.</p>
+        <p>3. <strong>Hak Akses Admin:</strong> Seluruh aktivitas kelola iklan dan verifikasi dicatat secara aman dalam sistem log internal demi mencegah penyalahgunaan data.</p>
+      </div>
+      <div class="pt-3 border-t border-slate-100 flex justify-end">
+        <button onclick="closePrivacyModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold shadow-sm transition">
+          Saya Mengerti & Setuju
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts: Sidebar, Chart.js, CSV Tools, & Privacy Modal -->
+  <script>
+    lucide.createIcons();
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function openPrivacyModal() {
+      document.getElementById('privacyModal').classList.remove('hidden');
+    }
+
+    function closePrivacyModal() {
+      document.getElementById('privacyModal').classList.add('hidden');
+    }
+
+    // Inisialisasi Chart.js
+    const ctx = document.getElementById('propertyChart').getContext('2d');
+    const propertyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'],
+        datasets: [{
+          label: 'Total Pengajuan Masuk',
+          data: [12, 19, 15, 22, 28, 35, 42, 50, 68, 128],
+          backgroundColor: '#f59e0b',
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // CSV Tools: Export Table to CSV
+    function exportTableToCSV(filename) {
+      const csv = [];
+      const rows = document.querySelectorAll("#adminTable tr");
+      
+      for (let i = 0; i < rows.length; i++) {
+        const row = [], cols = rows[i].querySelectorAll("td, th");
+        for (let j = 0; j < cols.length - 2; j++) { // Lewatkan kolom aksi & tombol
+          let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/(\s\s)/gm, " ");
+          row.push('"' + data + '"');
+        }
+        csv.push(row.join(","));
+      }
+
+      // Download file CSV
+      const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+      const downloadLink = document.createElement("a");
+      downloadLink.download = filename;
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+
+    // CSV Tools: Import Table from CSV
+    function importTableFromCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split("\n");
+        const tbody = document.querySelector("#adminTable tbody");
+        
+        // Loop mulai dari baris ke-2 (lewati header)
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+          if (cols.length >= 6) {
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-slate-50 transition";
+            tr.innerHTML = `
+              <td class="p-3.5 whitespace-nowrap"><span class="font-mono text-[10px] text-amber-600 block font-bold">${cols[0].replace(/"/g,'')}</span></td>
+              <td class="p-3.5"><span class="text-[10px] text-slate-500 font-medium">File Impor</span></td>
+              <td class="p-3.5"><div class="font-bold text-slate-800">${cols[2] ? cols[2].replace(/"/g,'') : 'Klien'}</div></td>
+              <td class="p-3.5"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-purple-100 text-purple-700">Impor CSV</span></td>
+              <td class="p-3.5 font-medium text-slate-800">${cols[4] ? cols[4].replace(/"/g,'') : '-'}</td>
+              <td class="p-3.5"><div class="font-bold text-amber-600">${cols[5] ? cols[5].replace(/"/g,'') : '-'}</div></td>
+              <td class="p-3.5"><span class="px-2.5 py-1 rounded-lg font-semibold bg-amber-100 text-amber-800 text-[11px]">Baru</span></td>
+              <td class="p-3.5 text-center"><button class="px-2.5 py-1 rounded-lg bg-amber-500 text-white font-bold text-[11px]">Posting</button></td>
+              <td class="p-3.5 text-center"><button class="p-1.5 text-slate-400 hover:text-red-600" onclick="this.closest('tr').remove(); updateCounter();"><i class="fa-solid fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+          }
+        }
+        updateCounter();
+        alert("Data CSV berhasil diimpor ke dalam tabel!");
+      };
+      reader.readAsText(file);
+    }
+
+    function updateCounter() {
+      const rowCount = document.querySelectorAll("#adminTable tbody tr").length;
+      document.getElementById("data-counter").innerText = rowCount;
+    }
+  </script>
+
+</body>
+</html>
