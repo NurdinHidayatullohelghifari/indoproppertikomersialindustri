@@ -477,13 +477,22 @@
                         </div>
 
                         <div id="form-section" class="lg:col-span-5 bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+                            <div id="sync-status-banner" class="mb-4 hidden rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-slate-700">
+                                <div class="flex items-start gap-2">
+                                    <i class="fa-solid fa-circle-info mt-0.5 text-amber-600"></i>
+                                    <div>
+                                        <div class="text-[11px] font-extrabold uppercase tracking-[0.12em] text-amber-700">Mode data saat ini</div>
+                                        <p id="sync-status-message" class="text-[11px] leading-relaxed text-slate-600"></p>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mb-5 border-b pb-4 border-slate-100">
                                 <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">Layanan Responsif</span>
                                 <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
                                     <i class="fa-solid fa-clipboard-list text-amber-500"></i>
                                     Form Titip Jual / Cari Lahan
                                 </h2>
-                                <p class="text-xs text-slate-500 mt-1">Isi formulir pengajuan di bawah ini. Tim kami akan segera menindaklanjuti.</p>
+                                <p class="text-xs text-slate-500 mt-1">Isi formulir di bawah ini. Info properti akan ditampilkan di katalog publik; nama dan nomor WhatsApp Anda tetap privat.</p>
                             </div>
 
                             <form id="public-submission-form" onsubmit="handlePublicSubmit(event)" class="space-y-3.5">
@@ -619,6 +628,13 @@
                             <option value="Ruko / Komersial">Komersial</option>
                             <option value="Lahan Lainnya">Lahan Lainnya</option>
                         </select>
+                        <select id="public-sort" onchange="renderPublicListings()" class="text-xs bg-slate-900 border border-slate-700 text-white rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none">
+                            <option value="featured">Urutkan: Unggulan</option>
+                            <option value="latest">Terbaru</option>
+                            <option value="price-low">Harga: Rendah ke Tinggi</option>
+                            <option value="price-high">Harga: Tinggi ke Rendah</option>
+                            <option value="location">Lokasi A-Z</option>
+                        </select>
                     </div>
                 </div>
 
@@ -750,6 +766,9 @@
                         <button onclick="exportToCSV()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-violet-600 hover:bg-violet-500 text-white transition-all flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-file-csv"></i> Ekspor CSV
                         </button>
+                        <button onclick="resetDemoData()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-all flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Data Demo
+                        </button>
                         <button onclick="logoutAdmin()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-slate-800 hover:bg-red-900/50 text-red-400 border border-slate-700 transition-all flex items-center gap-1.5">
                             <i class="fa-solid fa-right-from-bracket"></i> Logout
                         </button>
@@ -799,6 +818,8 @@
 
                         <div class="text-xs text-slate-400">
                             Menampilkan <span id="table-count" class="font-bold text-white">0</span> data pengajuan
+                            <span class="ml-2 text-slate-500">/</span>
+                            <span id="data-counter" class="font-bold text-amber-300">0</span>
                         </div>
                     </div>
 
@@ -817,6 +838,36 @@
                                 </tr>
                             </thead>
                             <tbody id="admin-table-body" class="divide-y divide-slate-800/60 text-slate-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-3xl border border-slate-800 overflow-hidden shadow-2xl mt-6">
+                    <div class="p-5 border-b border-slate-800 bg-slate-950/60 flex flex-col md:flex-row gap-3 justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Manajemen Listing Properti</h2>
+                            <p class="text-[11px] text-slate-400">Edit, hapus, dan kelola katalog properti publik.</p>
+                        </div>
+                        <button onclick="openAddListingModal()" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 transition-all flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-plus"></i> Tambah Listing
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800 uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-4">ID</th>
+                                    <th class="p-4">Judul</th>
+                                    <th class="p-4">Kategori</th>
+                                    <th class="p-4">Lokasi</th>
+                                    <th class="p-4">Harga</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-listings-body" class="divide-y divide-slate-800/60 text-slate-300">
                             </tbody>
                         </table>
                     </div>
@@ -1075,6 +1126,7 @@
                         <select id="l-status" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
                             <option value="DIJUAL">DIJUAL</option>
                             <option value="DISEWAKAN">DISEWAKAN</option>
+                            <option value="DICARI">DICARI</option>
                         </select>
                     </div>
                 </div>
@@ -1236,9 +1288,10 @@
         const DRIVE_MIGRATION_KEY = 'indoproperti_drive_migration_v1';
 
         const IS_LOCAL_FILE = window.location.protocol === 'file:';
-        const DEFAULT_GOOGLE_APPS_SCRIPT_URL = '';
+        const IS_PUBLIC_HOSTED = /\.github\.io$/i.test(window.location.hostname);
+        const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFtP6zllMGvPkV_90Q8y4EeRBPydr3QSeaIsNxjmjUpGTSJxa6TngZh5sOI1YhdhYB/exec';
         const GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY = 'indoproperti_google_apps_script_url';
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit';
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/15EO9psGiL7jvc09Iw5hJKIj7Krylc215HWWnCGfQx94/edit';
 
         function getGoogleAppsScriptUrl() {
             const stored = localStorage.getItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY);
@@ -1301,7 +1354,14 @@
             loadAds();
             updateSystemModeBadge();
             checkAdminSession();
+            if (!IS_LOCAL_FILE && getGoogleAppsScriptUrl()) {
+                await testGoogleScriptConnection();
+            }
+            if (IS_PUBLIC_HOSTED) {
+                document.getElementById('admin-nav-btn').classList.add('hidden');
+            }
             renderPublicListings();
+            renderAdminListingTable();
             renderDynamicAds();
             await loadSharedData(legacyListings, legacySubmissions);
         });
@@ -1359,6 +1419,7 @@
             if (IS_LOCAL_FILE || !getGoogleAppsScriptUrl()) {
                 renderPublicListings();
                 if (isLoggedIn) renderAdminTable();
+                renderAdminListingTable();
                 return;
             }
 
@@ -1368,25 +1429,22 @@
                     throw new Error(data && data.error ? data.error : 'Respons data Google Drive tidak valid.');
                 }
 
-                listings = data.listings;
+                const localListingSource = Array.isArray(legacyListings) ? legacyListings : listings;
+                const remoteListingIds = new Set(data.listings.map(item => String(item.id)));
+                listings = [
+                    ...data.listings,
+                    ...localListingSource.filter(item => item && item.id && !remoteListingIds.has(String(item.id)))
+                ];
                 driveConnected = true;
 
                 if (localStorage.getItem(DRIVE_MIGRATION_KEY) !== 'complete') {
-                    const remoteListingIds = new Set(listings.map(item => String(item.id)));
-                    const legacyListingSource = Array.isArray(legacyListings)
-                        ? legacyListings
-                        : (listings.length === 0 ? INITIAL_LISTINGS : []);
-                    const toMigrateListings = legacyListingSource
-                        .filter(item => item && item.id && !remoteListingIds.has(String(item.id)));
                     const toMigrateSubmissions = (Array.isArray(legacySubmissions) ? legacySubmissions : [])
                         .filter(item => item && item.id);
 
                     const migrationResults = await Promise.all([
-                        ...toMigrateListings.map(item => syncRecordToGoogleDrive(item, 'listing', 'upsert', true)),
                         ...toMigrateSubmissions.map(item => syncRecordToGoogleDrive(item, 'submission', 'upsert', true))
                     ]);
                     if (migrationResults.every(result => result === 'saved')) {
-                        listings = [...listings, ...toMigrateListings];
                         localStorage.setItem(DRIVE_MIGRATION_KEY, 'complete');
                     } else if (migrationResults.length > 0) {
                         showToast('Migrasi data lama ke Drive belum terkonfirmasi. Data lama tetap disimpan di browser ini.', 'error');
@@ -1394,6 +1452,7 @@
                 }
 
                 renderPublicListings();
+                renderAdminListingTable();
                 if (isLoggedIn) renderAdminTable();
             } catch (error) {
                 console.error('Gagal memuat data bersama dari Google Drive:', error);
@@ -1413,6 +1472,7 @@
         function saveListings() {
             localStorage.setItem('indoproperti_listings', JSON.stringify(listings));
             renderPublicListings();
+            if (isLoggedIn) renderAdminListingTable();
         }
 
         function loadSubmissions() {
@@ -1596,6 +1656,10 @@
         }
 
         function showSection(sectionId) {
+            if (sectionId === 'admin-page' && IS_PUBLIC_HOSTED) {
+                showToast('Dashboard admin dinonaktifkan pada situs demo publik.', 'error');
+                return;
+            }
             if (sectionId === 'admin-page' && !isLoggedIn) {
                 openLoginModal();
                 return;
@@ -1609,6 +1673,7 @@
             if (sectionId === 'admin-page') {
                 updateSystemModeBadge();
                 renderAdminTable();
+                renderAdminListingTable();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -1708,8 +1773,16 @@
             msgEl.textContent = message;
             if (type === 'success') {
                 iconEl.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+                toast.classList.remove('bg-amber-500/10', 'border-amber-500/40');
+                toast.classList.add('bg-slate-900', 'border-slate-700');
+            } else if (type === 'warning') {
+                iconEl.className = "fa-solid fa-triangle-exclamation text-amber-400 text-lg";
+                toast.classList.remove('bg-slate-900', 'border-slate-700');
+                toast.classList.add('bg-amber-500/10', 'border-amber-500/40');
             } else {
                 iconEl.className = "fa-solid fa-circle-xmark text-red-400 text-lg";
+                toast.classList.remove('bg-amber-500/10', 'border-amber-500/40');
+                toast.classList.add('bg-slate-900', 'border-slate-700');
             }
 
             toast.classList.remove('hidden');
@@ -1724,8 +1797,9 @@
 
         function renderPublicListings() {
             const container = document.getElementById('listings-container');
-            const search = document.getElementById('public-search').value.toLowerCase();
+            const search = document.getElementById('public-search').value.trim().toLowerCase();
             const categoryFilter = document.getElementById('public-filter-category').value;
+            const sortMode = document.getElementById('public-sort')?.value || 'featured';
 
             const filtered = listings.filter(item => {
                 const matchSearch = String(item.title || '').toLowerCase().includes(search) ||
@@ -1735,17 +1809,37 @@
                 return matchSearch && matchCat;
             });
 
-            if (filtered.length === 0) {
+            const normalizePriceValue = (value) => {
+                const raw = String(value || '').toLowerCase();
+                const match = raw.match(/(\d+(?:[.,]\d+)?)/g);
+                const amount = match && match.length ? Number(match[0].replace(',', '.')) : 0;
+
+                if (raw.includes('miliar')) return amount * 1000;
+                if (raw.includes('juta') || raw.includes('jt')) return amount;
+                return amount;
+            };
+
+            const sorted = [...filtered].sort((a, b) => {
+                if (sortMode === 'price-low') return normalizePriceValue(a.price) - normalizePriceValue(b.price);
+                if (sortMode === 'price-high') return normalizePriceValue(b.price) - normalizePriceValue(a.price);
+                if (sortMode === 'location') return String(a.location || '').localeCompare(String(b.location || ''));
+                return 0;
+            });
+
+            if (sorted.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-full text-center py-12 glass-panel rounded-3xl">
                         <i class="fa-solid fa-building-circle-xmark text-4xl text-slate-500 mb-3 block"></i>
                         <p class="text-sm text-slate-400">Tidak ada listing properti yang sesuai kriteria pencarian.</p>
+                        <button type="button" onclick="document.getElementById('public-search').value=''; document.getElementById('public-filter-category').value='Semua'; document.getElementById('public-sort').value='featured'; renderPublicListings();" class="mt-4 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs">
+                            Reset Filter
+                        </button>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = filtered.map(item => `
+            container.innerHTML = sorted.map(item => `
                 <div class="glass-panel rounded-3xl overflow-hidden border border-slate-800 flex flex-col justify-between hover:border-amber-500/40 transition-all duration-300 group">
                     <div>
                         <div class="relative h-52 bg-slate-900 overflow-hidden">
@@ -1846,7 +1940,10 @@
 
         async function handlePublicSubmit(e) {
             e.preventDefault();
-
+            if (IS_PUBLIC_HOSTED && !isGoogleSyncEnabled()) {
+                showToast('Form online belum terhubung ke sistem penerimaan. Silakan hubungi kami melalui WhatsApp.', 'error');
+                return;
+            }
             const newEntry = {
                 id: createUniqueId('IP'),
                 timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
@@ -1866,6 +1963,8 @@
             if (!isGoogleSyncEnabled()) {
                 submissions.unshift(newEntry);
                 saveSubmissions();
+                listings.unshift(createPublicListingFromSubmission(newEntry));
+                saveListings();
                 document.getElementById('public-submission-form').reset();
                 document.getElementById('pub-files-preview').innerHTML = '';
                 showDriveSyncToast('not-configured', 'Pengajuan berhasil diterima.');
@@ -1880,12 +1979,37 @@
 
             submissions.unshift(newEntry);
             saveSubmissions();
+            listings.unshift(createPublicListingFromSubmission(newEntry));
+            saveListings();
             document.getElementById('public-submission-form').reset();
             document.getElementById('pub-files-preview').innerHTML = '';
             showDriveSyncToast(syncResult, 'Pengajuan berhasil diterima.');
         }
 
+        function createPublicListingFromSubmission(entry) {
+            const isRequest = /cari|request/i.test(String(entry.type || ''));
+            const areas = String(entry.area || '').split('/');
+            return {
+                id: entry.id,
+                title: `${isRequest ? 'Mencari ' : ''}${entry.category || 'Properti'} - ${entry.location || 'Lokasi belum diisi'}`,
+                category: entry.category || '',
+                statusTag: isRequest ? 'DICARI' : 'DIJUAL',
+                price: entry.price || '',
+                location: entry.location || '',
+                lt: areas[0] ? areas[0].trim() : '',
+                lb: areas[1] ? areas[1].trim() : '',
+                sertifikat: '',
+                zonasi: '',
+                image: 'https://placehold.co/800x600/0f172a/f59e0b?text=Properti+Industri',
+                desc: entry.notes || ''
+            };
+        }
+
         function openLoginModal() {
+            if (IS_PUBLIC_HOSTED) {
+                showToast('Dashboard admin tidak tersedia pada situs demo publik.', 'error');
+                return;
+            }
             if (isLoggedIn) {
                 showSection('admin-page');
                 return;
@@ -1912,6 +2036,11 @@
 
         function handleLoginSubmit(e) {
             e.preventDefault();
+            if (IS_PUBLIC_HOSTED) {
+                closeLoginModal();
+                showToast('Dashboard admin tidak tersedia pada situs demo publik.', 'error');
+                return;
+            }
             const u = document.getElementById('login-user').value;
             const p = document.getElementById('login-pass').value;
 
@@ -1933,6 +2062,45 @@
             updateNavLoginBtn();
             showSection('public-page');
             showToast('Anda telah logout.');
+        }
+
+        function renderAdminListingTable() {
+            const tbody = document.getElementById('admin-listings-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = listings.map(item => `
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="p-4 font-mono text-[10px] text-amber-400">${safeText(item.id)}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-white">${safeText(item.title)}</div>
+                    </td>
+                    <td class="p-4">
+                        <span class="inline-block px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-800 text-slate-200 border border-slate-700">${safeText(item.category)}</span>
+                    </td>
+                    <td class="p-4 font-medium text-slate-200">${safeText(item.location)}</td>
+                    <td class="p-4 font-bold text-amber-400">${safeText(item.price)}</td>
+                    <td class="p-4">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl ${item.statusTag === 'DIJUAL' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : item.statusTag === 'DICARI' ? 'bg-blue-950 text-blue-400 border border-blue-800' : 'bg-amber-950 text-amber-300 border border-amber-800'} text-[10px] font-bold">
+                            ${safeText(item.statusTag)}
+                        </span>
+                    </td>
+                    <td class="p-4 text-center whitespace-nowrap">
+                        <button onclick="openEditListingModal('${item.id}')" class="p-2 text-slate-400 hover:text-blue-400 transition-colors" title="Edit Listing">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="deleteListing('${item.id}')" class="p-2 text-slate-400 hover:text-red-400 transition-colors" title="Hapus Listing">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('') || `
+                <tr>
+                    <td colspan="7" class="p-8 text-center text-slate-500">
+                        <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
+                        Belum ada listing yang tersedia.
+                    </td>
+                </tr>
+            `;
         }
 
         function renderAdminTable() {
@@ -1967,6 +2135,8 @@
             document.getElementById('stat-baru').textContent = submissions.filter(s => s.status === 'Baru').length;
             document.getElementById('stat-proses').textContent = submissions.filter(s => s.status === 'Di-Follow Up').length;
             document.getElementById('stat-selesai').textContent = submissions.filter(s => s.status === 'Selesai').length;
+            const dataCounter = document.getElementById('data-counter');
+            if (dataCounter) dataCounter.textContent = submissions.length;
             document.getElementById('table-count').textContent = filtered.length;
 
             if (filtered.length === 0) {
@@ -2094,7 +2264,6 @@
                     image: firstPhoto
                         ? (firstPhoto.dataUrl || firstPhoto.viewUrl || firstPhoto.url)
                         : 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
-                    attachments,
                     desc: sub.notes && sub.notes !== '-'
                         ? sub.notes
                         : (isPropertyRequest
@@ -2104,11 +2273,29 @@
                 };
 
                 if (!isGoogleSyncEnabled()) {
+                    const previousListings = [...listings];
+                    const previousStatus = sub.status;
+                    const previousIsPosted = sub.isPosted;
                     listings.unshift(newListing);
-                    saveListings();
                     sub.isPosted = true;
                     sub.status = 'Selesai';
-                    saveSubmissions();
+                    try {
+                        localStorage.setItem('indoproperti_listings', JSON.stringify(listings));
+                        localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions));
+                    } catch (error) {
+                        listings = previousListings;
+                        sub.isPosted = previousIsPosted;
+                        sub.status = previousStatus;
+                        try {
+                            localStorage.setItem('indoproperti_listings', JSON.stringify(listings));
+                        } catch (restoreError) {
+                            console.error('Gagal memulihkan listing setelah posting gagal:', restoreError);
+                        }
+                        renderPublicListings();
+                        console.error('Gagal menyimpan listing hasil posting:', error);
+                        showToast('Posting gagal disimpan. Penyimpanan browser mungkin penuh; hapus data lama lalu coba lagi.', 'error');
+                        return;
+                    }
                     document.getElementById('public-search').value = '';
                     document.getElementById('public-filter-category').value = 'Semua';
                     renderPublicListings();
@@ -2118,7 +2305,7 @@
                     return;
                 }
 
-                const syncResult = await syncRecordToGoogleDrive(newListing, 'listing');
+                const syncResult = await syncRecordToGoogleDrive({ ...newListing, attachments }, 'listing');
                 if (!isSaveConfirmed(syncResult)) {
                     showDriveSyncToast(syncResult, 'Listing');
                     return;
@@ -2254,17 +2441,61 @@
         }
 
         function openAddListingModal() {
-            document.getElementById('add-listing-modal').classList.remove('hidden');
+            const modal = document.getElementById('add-listing-modal');
+            const titleEl = modal.querySelector('h3');
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-plus-circle text-amber-400"></i> Tambah Listing Properti Baru';
+            modal.dataset.mode = 'create';
+            delete modal.dataset.editId;
+            const form = modal.querySelector('form');
+            if (form) form.reset();
+            document.getElementById('l-files-preview').innerHTML = '';
+            modal.classList.remove('hidden');
+        }
+
+        function openEditListingModal(id) {
+            const item = listings.find(entry => entry.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('add-listing-modal');
+            const titleEl = modal.querySelector('h3');
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square text-blue-400"></i> Edit Listing Properti';
+            modal.dataset.mode = 'edit';
+            modal.dataset.editId = id;
+
+            document.getElementById('l-title').value = item.title || '';
+            document.getElementById('l-category').value = item.category || 'Bangunan Pabrik';
+            document.getElementById('l-status').value = item.statusTag || 'DIJUAL';
+            document.getElementById('l-price').value = item.price || '';
+            document.getElementById('l-location').value = item.location || '';
+            document.getElementById('l-lt').value = item.lt || '';
+            document.getElementById('l-lb').value = item.lb || '';
+            document.getElementById('l-image').value = item.image || '';
+            document.getElementById('l-desc').value = item.desc || '';
+            document.getElementById('l-files-preview').innerHTML = '';
+            modal.classList.remove('hidden');
         }
 
         function closeAddListingModal() {
-            document.getElementById('add-listing-modal').classList.add('hidden');
+            const modal = document.getElementById('add-listing-modal');
+            const form = modal.querySelector('form');
+            if (form) form.reset();
+            modal.dataset.mode = 'create';
+            delete modal.dataset.editId;
+            const titleEl = modal.querySelector('h3');
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-plus-circle text-amber-400"></i> Tambah Listing Properti Baru';
+            document.getElementById('l-files-preview').innerHTML = '';
+            modal.classList.add('hidden');
         }
 
         async function handleAddListingSubmit(e) {
             e.preventDefault();
+            const modal = document.getElementById('add-listing-modal');
+            const isEditing = modal.dataset.mode === 'edit';
+            const editingId = modal.dataset.editId;
+            const existingListing = isEditing ? listings.find(item => item.id === editingId) : null;
+
             const newListing = {
-                id: createUniqueId('LIST'),
+                id: isEditing ? editingId : createUniqueId('LIST'),
                 title: document.getElementById('l-title').value,
                 category: document.getElementById('l-category').value,
                 statusTag: document.getElementById('l-status').value,
@@ -2272,37 +2503,88 @@
                 location: document.getElementById('l-location').value,
                 lt: document.getElementById('l-lt').value,
                 lb: document.getElementById('l-lb').value,
-                sertifikat: 'Terverifikasi',
-                zonasi: 'Kawasan Industri',
-                image: document.getElementById('l-image').value || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
-                attachments: await Promise.all(Array.from(document.getElementById('l-files').files).map(fileToDataUrl)),
+                sertifikat: existingListing ? existingListing.sertifikat : 'Terverifikasi',
+                zonasi: existingListing ? existingListing.zonasi : 'Kawasan Industri',
+                image: document.getElementById('l-image').value || (existingListing && existingListing.image) || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+                attachments: [
+                    ...((existingListing && Array.isArray(existingListing.attachments)) ? existingListing.attachments : []),
+                    ...await Promise.all(Array.from(document.getElementById('l-files').files).map(fileToDataUrl))
+                ],
                 desc: document.getElementById('l-desc').value || '-'
             };
 
             if (!isGoogleSyncEnabled()) {
-                listings.unshift(newListing);
+                if (isEditing) {
+                    const idx = listings.findIndex(item => item.id === editingId);
+                    if (idx >= 0) listings[idx] = { ...listings[idx], ...newListing };
+                } else {
+                    listings.unshift(newListing);
+                }
                 saveListings();
                 closeAddListingModal();
-                showDriveSyncToast('not-configured', 'Listing properti baru berhasil diterbitkan.');
+                showToast(isEditing ? 'Listing properti berhasil diperbarui.' : 'Listing properti baru berhasil diterbitkan.', 'success');
                 return;
             }
 
             const syncResult = await syncRecordToGoogleDrive(newListing, 'listing');
             if (!isSaveConfirmed(syncResult)) {
-                showDriveSyncToast(syncResult, 'Listing');
+                showDriveSyncToast(syncResult, isEditing ? 'Edit Listing' : 'Listing');
                 return;
             }
-            listings.unshift(newListing);
+
+            if (isEditing) {
+                const idx = listings.findIndex(item => item.id === editingId);
+                if (idx >= 0) listings[idx] = { ...listings[idx], ...newListing };
+            } else {
+                listings.unshift(newListing);
+            }
+
             saveListings();
             closeAddListingModal();
-            showDriveSyncToast(syncResult, 'Listing properti baru berhasil diterbitkan.');
+            showDriveSyncToast(syncResult, isEditing ? 'Listing properti berhasil diperbarui.' : 'Listing properti baru berhasil diterbitkan.');
+        }
+
+        async function deleteListing(id) {
+            const target = listings.find(item => item.id === id);
+            if (!target) return;
+            if (!confirm(`Hapus listing "${target.title}" dari katalog publik?`)) return;
+
+            if (isGoogleSyncEnabled()) {
+                const syncResult = await syncRecordToGoogleDrive({ id }, 'listing', 'delete');
+                if (!isSaveConfirmed(syncResult)) {
+                    showDriveSyncToast(syncResult, 'Hapus listing');
+                    return;
+                }
+            }
+
+            listings = listings.filter(item => item.id !== id);
+            saveListings();
+            showDriveSyncToast(isGoogleSyncEnabled() ? 'saved' : 'not-configured', 'Listing berhasil dihapus.');
+        }
+
+        async function testGoogleScriptConnection() {
+            const scriptUrl = getGoogleAppsScriptUrl();
+            if (!scriptUrl) return;
+
+            try {
+                const health = await fetchSharedData();
+                if (health && health.ok && Array.isArray(health.listings)) {
+                    showToast('Koneksi Google Apps Script berhasil. Sinkronisasi formulir publik dan katalog siap digunakan.', 'success');
+                    return;
+                }
+                showToast(`URL Google Apps Script tersimpan, tetapi endpoint tidak merespons dengan data valid${health && health.error ? ': ' + health.error : ''}.`, 'warning');
+            } catch (error) {
+                console.error('Uji koneksi Google Apps Script gagal:', error);
+                showToast('URL Google Apps Script tersimpan, tetapi belum bisa dijalankan. Periksa deployment Web App dan URL-nya.', 'warning');
+            }
         }
 
         function saveGoogleScriptUrlConfig() {
             const input = document.getElementById('drive-script-url-input');
             if (!input) return;
 
-            const url = input.value.trim();
+            const rawUrl = input.value.trim();
+            const url = rawUrl.replace(/\/+$/, '');
             if (url && !/^https?:\/\//.test(url)) {
                 showToast('URL Google Apps Script harus diawali https:// atau http://', 'error');
                 return;
@@ -2311,25 +2593,64 @@
             localStorage.setItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY, url);
             input.value = url;
             updateSystemModeBadge();
-            showToast(url ? 'URL Google Apps Script berhasil disimpan.' : 'URL Google Apps Script dihapus. Mode lokal aktif.', url ? 'success' : 'warning');
             renderPublicListings();
             if (isLoggedIn) renderAdminTable();
+
+            if (url && !IS_LOCAL_FILE) {
+                testGoogleScriptConnection();
+            } else if (url) {
+                showToast('URL tersimpan. Sinkronisasi aktif saat situs dibuka dari hosting, bukan dari file lokal.', 'warning');
+            } else {
+                showToast('URL Google Apps Script dihapus. Mode lokal aktif.', 'warning');
+            }
         }
 
         function updateSystemModeBadge() {
             const badge = document.getElementById('system-mode-badge');
             const input = document.getElementById('drive-script-url-input');
+            const syncBanner = document.getElementById('sync-status-banner');
+            const syncMessage = document.getElementById('sync-status-message');
+            const isLocal = !isGoogleSyncEnabled();
+
             if (badge) {
-                const isLocal = !isGoogleSyncEnabled();
                 badge.classList.remove('hidden');
-                badge.textContent = isLocal ? 'Mode Lokal • Data disimpan di browser' : 'Google Sync • Data terhubung ke Drive';
+                badge.textContent = isLocal ? 'Mode Lokal • Data disimpan di browser' : 'Google Sync • Form & katalog terhubung';
                 badge.className = isLocal
                     ? 'px-3 py-2 text-[10px] font-bold rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                     : 'px-3 py-2 text-[10px] font-bold rounded-xl border border-sky-500/40 bg-sky-500/10 text-sky-300';
             }
+            if (syncBanner && syncMessage) {
+                syncBanner.classList.toggle('hidden', !isLocal);
+                syncMessage.textContent = isLocal
+                    ? 'Data hanya tersimpan di browser ini dan tidak dapat dilihat dari perangkat lain. Aktifkan Google Apps Script untuk sinkronisasi.'
+                    : 'Info properti dari pengajuan akan tampil di katalog publik. Nama, nomor WhatsApp, dan lampiran tetap privat.';
+            }
             if (input) {
                 input.value = getGoogleAppsScriptUrl();
             }
+        }
+
+        function resetDemoData() {
+            if (!confirm('Reset semua data demo akan mengembalikan listing & pengajuan ke data awal. Lanjutkan?')) {
+                return;
+            }
+
+            listings = JSON.parse(JSON.stringify(INITIAL_LISTINGS));
+            submissions = JSON.parse(JSON.stringify(INITIAL_SUBMISSIONS));
+            adConfigs = JSON.parse(JSON.stringify(DEFAULT_ADS));
+
+            localStorage.setItem('indoproperti_listings', JSON.stringify(listings));
+            localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions));
+            localStorage.setItem('indoproperti_ads', JSON.stringify(adConfigs));
+            localStorage.removeItem(DRIVE_MIGRATION_KEY);
+
+            renderPublicListings();
+            renderDynamicAds();
+            renderAdminListingTable();
+            if (isLoggedIn) {
+                renderAdminTable();
+            }
+            showToast('Data demo berhasil direset ke kondisi awal.', 'success');
         }
 
         function exportBackupJson() {

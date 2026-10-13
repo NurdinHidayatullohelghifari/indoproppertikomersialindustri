@@ -84,8 +84,12 @@ function doGet(e) {
     values.slice(1).forEach(function(row) {
       const recordType = row[1] === 'Listing Diposting' ? 'listing' : 'submission';
       const record = recordFromRow(row, recordType);
-      if (!record || record.deleted || recordType !== 'listing') return;
-      records.listings.push(publicListing(record));
+      if (!record || record.deleted) return;
+      if (recordType === 'listing') {
+        records.listings.push(publicListing(record));
+      } else if (!record.isPosted) {
+        records.listings.push(publicSubmissionListing(record));
+      }
     });
 
     records.listings.reverse();
@@ -120,6 +124,32 @@ function doPost(e) {
     if (!data || data.source !== 'indoproperti') {
       throw new Error('Sumber data tidak valid.');
     }
+    if (data.action !== 'upsert' || data.recordType !== 'submission') {
+      throw new Error('Endpoint publik hanya menerima pengajuan baru.');
+    }
+
+    const allowedTypes = ['Titip Jual Properti', 'Cari / Request Properti'];
+    const allowedCategories = [
+      'Lahan Industri', 'Bangunan Pabrik', 'Gudang Logistik',
+      'Ruko / Komersial', 'Lahan Lainnya'
+    ];
+    if (allowedTypes.indexOf(data.type) === -1 || allowedCategories.indexOf(data.category) === -1) {
+      throw new Error('Jenis atau kategori pengajuan tidak valid.');
+    }
+    ['name', 'phone', 'location'].forEach(function(field) {
+      if (!String(data[field] || '').trim()) throw new Error('Kolom wajib belum diisi: ' + field);
+    });
+    if (String(data.name).length > 120 || String(data.phone).length > 32 ||
+        String(data.location).length > 200 || String(data.price || '').length > 120 ||
+        String(data.area || '').length > 120 || String(data.notes || '').length > 4000) {
+      throw new Error('Panjang salah satu kolom melebihi batas.');
+    }
+    const attachments = Array.isArray(data.attachments) ? data.attachments : [];
+    if (attachments.length > 5 || attachments.some(function(file) {
+      return !file || typeof file.dataUrl !== 'string' || file.dataUrl.length > 2 * 1024 * 1024;
+    })) {
+      throw new Error('Lampiran tidak valid atau melebihi batas ukuran.');
+    }
 
     const properties = PropertiesService.getScriptProperties();
     const folderId = properties.getProperty(CONFIG.folderProperty);
@@ -135,56 +165,36 @@ function doPost(e) {
       throw new Error('Sheet Data tidak ditemukan. Jalankan setupIndoProperti kembali.');
     }
 
-    const recordType = data.recordType === 'listing' ? 'listing' : 'submission';
+    const recordType = 'submission';
     const id = String(data.id || '');
-    if (!id) throw new Error('ID data wajib diisi.');
+    if (!/^IP-[A-Za-z0-9-]{1,80}$/.test(id)) throw new Error('ID pengajuan tidak valid.');
     const rows = sheet.getDataRange().getValues();
     const rowNumber = findRecordRow(rows, recordType, id);
+    if (rowNumber) throw new Error('Pengajuan dengan ID tersebut sudah pernah diterima.');
 
-    if (data.action === 'delete') {
-      const deletedRecord = {
-        recordType,
-        id,
-        deleted: true,
-        clientRequestId: data.clientRequestId || ''
-      };
-      const tombstone = [
-        new Date(),
-        recordType === 'listing' ? 'Listing Diposting' : 'Pengajuan',
-        sheetSafeCell(id),
-        '', '', '', '', '', '', '', '',
-        'Terhapus',
-        '',
-        JSON.stringify(deletedRecord)
-      ];
-      if (rowNumber) sheet.getRange(rowNumber, 1, 1, tombstone.length).setValues([tombstone]);
-      else sheet.appendRow(tombstone);
-      return jsonResponse({ ok: true, deleted: true });
-    }
-
-    const isListing = recordType === 'listing';
-    const folderLinks = saveAttachments(folder, data.attachments, isListing);
-    const record = { ...data, recordType };
-    delete record.source;
-    delete record.action;
-    record.attachments = folderLinks;
-    if (isListing) {
-      const firstImage = folderLinks.find(function(file) {
-        return file.type && file.type.indexOf('image/') === 0;
-      });
-      if (firstImage && (
-        String(record.image || '').startsWith('data:') ||
-        !record.image ||
-        (data.attachments || []).some(function(file) { return file && file.url === record.image; })
-      )) {
-        record.image = firstImage.viewUrl || firstImage.url;
-      }
-    }
-    const nameOrTitle = isListing ? record.title : record.name;
-    const type = isListing ? record.statusTag : record.type;
+    const folderLinks = saveAttachments(folder, attachments, false);
+    const record = {
+      recordType,
+      id,
+      timestamp: String(data.timestamp || ''),
+      type: data.type,
+      category: data.category,
+      name: String(data.name).trim(),
+      phone: String(data.phone).trim(),
+      location: String(data.location).trim(),
+      price: String(data.price || '-').trim(),
+      area: String(data.area || '-').trim(),
+      notes: String(data.notes || '-').trim(),
+      status: 'Baru',
+      isPosted: false,
+      attachments: folderLinks,
+      clientRequestId: String(data.clientRequestId || '')
+    };
+    const nameOrTitle = record.name;
+    const type = record.type;
     const row = [
       new Date(),
-      isListing ? 'Listing Diposting' : 'Pengajuan',
+      'Pengajuan',
       sheetSafeCell(id),
       sheetSafeCell(nameOrTitle),
       sheetSafeCell(type),
@@ -192,24 +202,21 @@ function doPost(e) {
       sheetSafeCell(record.phone),
       sheetSafeCell(record.location),
       sheetSafeCell(record.price),
-      sheetSafeCell(isListing ? [record.lt, record.lb].filter(Boolean).join(' / ') : record.area),
-      sheetSafeCell(isListing ? record.desc : record.notes),
-      sheetSafeCell(record.status || (isListing ? 'Diposting' : 'Baru')),
+      sheetSafeCell(record.area),
+      sheetSafeCell(record.notes),
+      'Baru',
       folderLinks.map(function(file) { return file.url; }).join('\n'),
       JSON.stringify(record)
     ];
 
-    if (rowNumber) sheet.getRange(rowNumber, 1, 1, row.length).setValues([row]);
-    else sheet.appendRow(row);
+    sheet.appendRow(row);
 
-    if (!rowNumber && !data.skipNotification) {
-      const subject = isListing
-        ? 'Listing IndoProperti diposting: ' + (nameOrTitle || id)
-        : 'Pengajuan baru IndoProperti: ' + (nameOrTitle || id);
+    if (!data.skipNotification) {
+      const subject = 'Pengajuan baru IndoProperti: ' + (nameOrTitle || id);
       const emailBody = [
         'Data baru telah disimpan ke Google Drive.',
         '',
-        'Jenis data: ' + (isListing ? 'Listing Diposting' : 'Pengajuan'),
+        'Jenis data: Pengajuan',
         'ID: ' + id,
         'Nama / Judul: ' + (nameOrTitle || '-'),
         'Lokasi: ' + (record.location || '-'),
@@ -242,6 +249,23 @@ function publicListing(record) {
     image: record.image || '',
     desc: record.desc || ''
   };
+}
+
+function publicSubmissionListing(record) {
+  const isRequest = /cari|request/i.test(String(record.type || ''));
+  const areas = String(record.area || '').split('/');
+  return publicListing({
+    id: record.id,
+    title: `${isRequest ? 'Mencari ' : ''}${record.category || 'Properti'} - ${record.location || 'Lokasi belum diisi'}`,
+    category: record.category || '',
+    statusTag: isRequest ? 'DICARI' : 'DIJUAL',
+    price: record.price || '',
+    location: record.location || '',
+    lt: areas[0] ? areas[0].trim() : '',
+    lb: areas[1] ? areas[1].trim() : '',
+    image: 'https://placehold.co/800x600/0f172a/f59e0b?text=Properti+Industri',
+    desc: record.notes || ''
+  });
 }
 
 function jsonpResponse(callback, value) {
