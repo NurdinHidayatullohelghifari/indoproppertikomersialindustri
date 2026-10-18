@@ -967,27 +967,23 @@
             </div>
 
             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
-                <div id="login-error-msg" class="hidden p-3 bg-red-950/50 border border-red-800/80 rounded-xl text-xs text-red-400 font-medium flex items-center gap-2">
-                    <i class="fa-solid fa-circle-exclamation"></i> Username atau password salah!
+                <div id="login-error-msg" class="hidden p-3 bg-red-950/50 border border-red-800/80 rounded-xl text-xs text-red-400 font-medium items-center gap-2" role="alert">
+                    <i class="fa-solid fa-circle-exclamation"></i><span id="login-error-text">Email atau sandi salah.</span>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
-                    <input type="text" id="login-user" autocomplete="username" placeholder="Masukkan username" class="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
+                    <label for="login-email" class="block text-xs font-semibold text-slate-300 mb-1">Email Administrator</label>
+                    <input type="email" id="login-email" autocomplete="username" placeholder="Masukkan email admin" class="w-full text-xs sm:text-sm px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
+                    <p class="text-[11px] text-slate-500 mt-2">Masukkan email administrator yang terdaftar.</p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-                    <div class="relative">
-                        <input type="password" id="login-pass" autocomplete="current-password" placeholder="Masukkan password" class="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
-                        <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200 text-xs">
-                            <i id="pass-icon" class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
+                <div id="login-password-wrap" class="hidden">
+                    <label for="login-password" class="block text-xs font-semibold text-slate-300 mb-1">Sandi Administrator</label>
+                    <input type="password" id="login-password" autocomplete="current-password" placeholder="Masukkan sandi admin" class="w-full text-xs sm:text-sm px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
 
-                <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all">
-                    Masuk ke Dashboard
+                <button id="login-submit-btn" type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all">
+                    Lanjutkan
                 </button>
             </form>
         </div>
@@ -1196,9 +1192,9 @@
                 Platform Broker Perantara Jual Beli Pabrik, Pergudangan Logistik, dan Lahan Industri Terverifikasi.
             </p>
             <div class="text-[11px] pt-4 border-t border-slate-900">
-                <span class="footer-glow font-black tracking-wide">
+                <button type="button" id="footer-admin-login" onclick="openLoginModal()" class="footer-glow font-black tracking-wide cursor-pointer hover:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded px-2 py-1 transition-colors" title="Klik untuk login admin" aria-label="Login administrator melalui teks hak cipta">
                     © 2026 IndoProperti Komersial & Industri @Nurdin Hidayatulloh el-ghifari . Hak Cipta Dilindungi.
-                </span>
+                </button>
             </div>
         </div>
     </footer>
@@ -1656,10 +1652,6 @@
         }
 
         function showSection(sectionId) {
-            if (sectionId === 'admin-page' && IS_PUBLIC_HOSTED) {
-                showToast('Dashboard admin dinonaktifkan pada situs demo publik.', 'error');
-                return;
-            }
             if (sectionId === 'admin-page' && !isLoggedIn) {
                 openLoginModal();
                 return;
@@ -2005,54 +1997,82 @@
             };
         }
 
+        function resetLoginForm() {
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const passwordWrap = document.getElementById('login-password-wrap');
+            const submitBtn = document.getElementById('login-submit-btn');
+            const error = document.getElementById('login-error-msg');
+            if (emailInput) emailInput.value = '';
+            if (passwordInput) passwordInput.value = '';
+            if (passwordWrap) passwordWrap.classList.add('hidden');
+            if (emailInput) emailInput.disabled = false;
+            if (submitBtn) submitBtn.textContent = 'Lanjutkan';
+            if (error) { error.classList.add('hidden'); error.classList.remove('flex'); }
+            document.getElementById('login-modal').dataset.step = 'email';
+        }
+
         function openLoginModal() {
-            if (IS_PUBLIC_HOSTED) {
-                showToast('Dashboard admin tidak tersedia pada situs demo publik.', 'error');
-                return;
-            }
             if (isLoggedIn) {
                 showSection('admin-page');
                 return;
             }
+            resetLoginForm();
             document.getElementById('login-modal').classList.remove('hidden');
-            document.getElementById('login-error-msg').classList.add('hidden');
+            const emailInput = document.getElementById('login-email');
+            if (emailInput) setTimeout(() => emailInput.focus(), 50);
         }
 
         function closeLoginModal() {
             document.getElementById('login-modal').classList.add('hidden');
-        }
-
-        function togglePassVisibility() {
-            const passInput = document.getElementById('login-pass');
-            const icon = document.getElementById('pass-icon');
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash';
-            } else {
-                passInput.type = 'password';
-                icon.className = 'fa-solid fa-eye';
-            }
+            resetLoginForm();
         }
 
         function handleLoginSubmit(e) {
             e.preventDefault();
-            if (IS_PUBLIC_HOSTED) {
-                closeLoginModal();
-                showToast('Dashboard admin tidak tersedia pada situs demo publik.', 'error');
+            const modal = document.getElementById('login-modal');
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const passwordWrap = document.getElementById('login-password-wrap');
+            const submitBtn = document.getElementById('login-submit-btn');
+            const error = document.getElementById('login-error-msg');
+            const errorText = document.getElementById('login-error-text');
+            const email = (emailInput.value || '').trim().toLowerCase();
+
+            error.classList.add('hidden');
+            error.classList.remove('flex');
+
+            if (modal.dataset.step !== 'password') {
+                if (email !== 'elghifarin@gmail.com') {
+                    errorText.textContent = 'Email tidak terdaftar sebagai administrator.';
+                    error.classList.remove('hidden');
+                    error.classList.add('flex');
+                    emailInput.focus();
+                    return;
+                }
+                modal.dataset.step = 'password';
+                emailInput.disabled = true;
+                passwordWrap.classList.remove('hidden');
+                passwordInput.required = true;
+                submitBtn.textContent = 'Masuk ke Dashboard';
+                passwordInput.focus();
                 return;
             }
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
 
-            if (u === 'admin' && p === 'admin123') {
+            // Catatan: pemeriksaan di browser tidak aman untuk situs publik; gunakan autentikasi backend untuk produksi.
+            if (email === 'elghifarin@gmail.com' && passwordInput.value === 'admin123') {
                 isLoggedIn = true;
                 sessionStorage.setItem('indoproperti_admin_logged', 'true');
                 closeLoginModal();
                 updateNavLoginBtn();
                 showSection('admin-page');
-                showToast('Login Admin berhasil!');
+                showToast('Login admin berhasil. Selamat datang!');
             } else {
-                document.getElementById('login-error-msg').classList.remove('hidden');
+                errorText.textContent = 'Sandi salah. Silakan coba lagi.';
+                error.classList.remove('hidden');
+                error.classList.add('flex');
+                passwordInput.value = '';
+                passwordInput.focus();
             }
         }
 
