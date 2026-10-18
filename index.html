@@ -3,7 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IndoProperti Komersial & Industri | Platform & Management System</title>
+    <title>IndoProperti Komersial & Industri | Jual Beli Lahan, Pabrik & Gudang</title>
+    <!-- SEO dasar: sesuaikan deskripsi bila layanan/isi situs berubah -->
+    <meta name="description" content="IndoProperti Komersial & Industri membantu pencarian dan penjualan lahan industri, pabrik, gudang logistik, ruko, dan properti komersial di Indonesia.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="googlebot" content="index, follow">
+    <meta name="keywords" content="jual lahan industri, lahan industri, jual pabrik, gudang logistik, properti komersial, properti industri, IndoProperti">
+    <meta name="author" content="IndoProperti Komersial & Industri">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:site_name" content="IndoProperti Komersial & Industri">
+    <meta property="og:title" content="IndoProperti Komersial & Industri | Jual Beli Lahan, Pabrik & Gudang">
+    <meta property="og:description" content="Cari dan ajukan lahan industri, pabrik, gudang logistik, serta properti komersial melalui IndoProperti.">
+    <!-- Setelah verifikasi di Google Search Console, ganti NILAI_DIISI_DARI_SEARCH_CONSOLE dengan kode verifikasi milik situs Anda. -->
+    <meta name="google-site-verification" content="SSKeX-eNpEEeYPJshr8UvgbxewVT5LERCD5MoqzJ_fA">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "IndoProperti Komersial & Industri",
+      "description": "Layanan pencarian dan penjualan lahan industri, bangunan pabrik, gudang logistik, dan properti komersial.",
+      "email": "info@indoproperti-industri.com",
+      "telephone": "+62-821-2652-6162",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Desa Cigentur, Kecamatan Paseh",
+        "addressLocality": "Kabupaten Bandung",
+        "addressRegion": "Jawa Barat",
+        "postalCode": "40383",
+        "addressCountry": "ID"
+      },
+      "areaServed": "Indonesia"
+    }
+    </script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons CDN -->
@@ -386,6 +419,26 @@
             }
         }
     </style>
+
+    <style id="indoproperti-layout-fixes">
+      html { scroll-behavior: smooth; }
+      body { overflow-x: hidden; }
+      img, video, iframe { max-width: 100%; }
+      input, select, textarea, button { max-width: 100%; }
+      #listings-container { align-items: stretch; }
+      #listings-container > div { min-width: 0; }
+      #admin-page { overflow-x: auto; }
+      #admin-page table { min-width: 760px; }
+      #public-submission-form .grid { align-items: start; }
+      @media (max-width: 640px) {
+        main, section { scroll-margin-top: 5rem; }
+        #listings-container { grid-template-columns: minmax(0, 1fr) !important; }
+        #public-submission-form .grid.grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
+        #admin-page { padding: .75rem !important; }
+        .glass-panel { min-width: 0; }
+      }
+    </style>
+
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
 
@@ -1431,6 +1484,17 @@
                     ...data.listings,
                     ...localListingSource.filter(item => item && item.id && !remoteListingIds.has(String(item.id)))
                 ];
+                // Beberapa versi Apps Script mengembalikan submissions; gabungkan agar admin
+                // dapat melihat pengajuan dari perangkat lain. Data lokal tetap dipertahankan.
+                if (Array.isArray(data.submissions)) {
+                    const localSubmissionSource = Array.isArray(legacySubmissions) ? legacySubmissions : submissions;
+                    const remoteSubmissionIds = new Set(data.submissions.map(item => String(item.id)));
+                    submissions = [
+                        ...data.submissions,
+                        ...localSubmissionSource.filter(item => item && item.id && !remoteSubmissionIds.has(String(item.id)))
+                    ];
+                    try { localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions)); } catch (storageError) { console.warn('Tidak dapat menyimpan cache pengajuan lokal.', storageError); }
+                }
                 driveConnected = true;
 
                 if (localStorage.getItem(DRIVE_MIGRATION_KEY) !== 'complete') {
@@ -1955,8 +2019,7 @@
             if (!isGoogleSyncEnabled()) {
                 submissions.unshift(newEntry);
                 saveSubmissions();
-                listings.unshift(createPublicListingFromSubmission(newEntry));
-                saveListings();
+                // Pengajuan baru berstatus menunggu admin; jangan tampilkan di katalog publik sebelum dikonfirmasi.
                 document.getElementById('public-submission-form').reset();
                 document.getElementById('pub-files-preview').innerHTML = '';
                 showDriveSyncToast('not-configured', 'Pengajuan berhasil diterima.');
@@ -1971,8 +2034,7 @@
 
             submissions.unshift(newEntry);
             saveSubmissions();
-            listings.unshift(createPublicListingFromSubmission(newEntry));
-            saveListings();
+            // Listing publik baru dibuat oleh admin melalui tombol Konfirmasi & Posting.
             document.getElementById('public-submission-form').reset();
             document.getElementById('pub-files-preview').innerHTML = '';
             showDriveSyncToast(syncResult, 'Pengajuan berhasil diterima.');
@@ -2130,9 +2192,9 @@
             const filterStatus = document.getElementById('admin-filter-status').value;
 
             const filtered = submissions.filter(item => {
-                const matchSearch = item.name.toLowerCase().includes(search) || 
-                                    item.location.toLowerCase().includes(search) ||
-                                    item.id.toLowerCase().includes(search);
+                const matchSearch = String(item.name || '').toLowerCase().includes(search) ||
+                                    String(item.location || '').toLowerCase().includes(search) ||
+                                    String(item.id || '').toLowerCase().includes(search);
                 const matchType = filterType === 'ALL' || item.type === filterType;
                 const matchStatus = filterStatus === 'ALL' || item.status === filterStatus;
                 return matchSearch && matchType && matchStatus;
@@ -2142,7 +2204,7 @@
                     <tr>
                         <td colspan="8" class="p-8 text-center text-slate-300">
                             <i class="fa-solid fa-lock text-amber-400 text-2xl mb-3 block"></i>
-                            Daftar penuh pengajuan tersimpan secara privat di Drive. Baris di bawah hanya data yang tersedia pada perangkat ini.
+                            Data pengajuan yang tersedia di server atau perangkat ini ditampilkan di bawah. Jika pengajuan dari perangkat lain belum muncul, periksa koneksi Google Apps Script dan respons data bersama.
                             <a href="${GOOGLE_SHEET_URL}" target="_blank" rel="noopener noreferrer" class="block mt-3 text-amber-400 font-bold hover:underline">
                                 Buka Google Sheet untuk melihat dan mengelola pengajuan
                                 <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
@@ -2337,9 +2399,14 @@
                 sub.status = 'Selesai';
                 const submissionSyncResult = await syncRecordToGoogleDrive(sub, 'submission');
                 if (!isSaveConfirmed(submissionSyncResult)) {
-                    sub.isPosted = false;
-                    sub.status = 'Baru';
-                    showToast('Listing berhasil tersimpan, tetapi status pengajuan belum tersinkron. Periksa Sheet sebelum mencoba ulang.', 'error');
+                    // Listing sudah berhasil tersimpan di server. Pertahankan tanda posted
+                    // di perangkat ini agar tombol tidak membuat listing duplikat saat dicoba ulang.
+                    sub.isPosted = true;
+                    sub.status = 'Selesai';
+                    try { localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions)); } catch (storageError) { console.warn(storageError); }
+                    renderAdminTable();
+                    renderAdminListingTable();
+                    showToast('Listing sudah tersimpan, tetapi status pengajuan belum terkonfirmasi di server. Periksa Google Sheet sebelum tindakan berikutnya.', 'warning');
                     return;
                 }
                 saveSubmissions();
