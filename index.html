@@ -961,6 +961,9 @@
                         <button onclick="openAddListingModal()" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 transition-all flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-plus"></i> Tambah Listing
                         </button>
+                        <button onclick="openUploadListingTool()" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-sky-600 hover:bg-sky-500 text-white transition-all flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Upload ke Website
+                        </button>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -1188,7 +1191,7 @@
                     <input type="text" id="l-image" placeholder="https://images.unsplash.com/..." class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
                 </div>
                 <div>
-                    <label for="l-files" class="block text-[11px] font-semibold text-slate-300 mb-1">Upload Beberapa Foto Properti</label>
+                    <label for="l-files" class="block text-[11px] font-semibold text-slate-300 mb-1">Upload Foto/Dokumen Baru (opsional saat revisi)</label>
                     <input type="file" id="l-files" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
                     <div id="l-files-preview" class="mt-2 grid grid-cols-3 gap-2"></div>
                 </div>
@@ -1866,6 +1869,16 @@
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
+        // Foto default IndoProperti dari Google Drive untuk listing tanpa foto atau foto yang gagal dimuat.
+        function getIndoPropertiPlaceholder() {
+            return 'https://drive.google.com/uc?export=view&id=1FlHNJdpdi8CEbSr88dR_BEEaEA5Db7lR';
+        }
+
+        function getListingImage(item) {
+            const candidate = String(item && item.image || '').trim();
+            return candidate || getIndoPropertiPlaceholder();
+        }
+
         function renderPublicListings() {
             const container = document.getElementById('listings-container');
             const search = document.getElementById('public-search').value.trim().toLowerCase();
@@ -1914,7 +1927,7 @@
                 <div class="glass-panel rounded-3xl overflow-hidden border border-slate-800 flex flex-col justify-between hover:border-amber-500/40 transition-all duration-300 group">
                     <div>
                         <div class="relative h-52 bg-slate-900 overflow-hidden">
-                            <img src="${escapeHtml(item.image)}" alt="${safeText(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x600/0f172a/f59e0b?text=Properti+Industri'">
+                            <img src="${escapeHtml(getListingImage(item))}" alt="${safeText(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null; this.src=getIndoPropertiPlaceholder();">
                             <div class="absolute top-3 left-3 bg-slate-950/80 text-amber-400 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase backdrop-blur-sm border border-amber-500/20">
                                 ${safeText(item.statusTag)}
                             </div>
@@ -1955,7 +1968,7 @@
             const modalContent = document.getElementById('property-modal-content');
             modalContent.innerHTML = `
                 <div class="relative h-64 bg-slate-950 rounded-2xl overflow-hidden mb-5">
-                    <img src="${escapeHtml(item.image)}" alt="${safeText(item.title)}" class="w-full h-full object-cover">
+                    <img src="${escapeHtml(getListingImage(item))}" alt="${safeText(item.title)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src=getIndoPropertiPlaceholder();">
                     <div class="absolute top-3 left-3 bg-slate-950/90 text-amber-400 text-xs font-bold px-3 py-1 rounded-full">
                         ${safeText(item.statusTag)} - ${safeText(item.category)}
                     </div>
@@ -2191,8 +2204,11 @@
                         </span>
                     </td>
                     <td class="p-4 text-center whitespace-nowrap">
-                        <button onclick="openEditListingModal('${item.id}')" class="p-2 text-slate-400 hover:text-blue-400 transition-colors" title="Edit Listing">
-                            <i class="fa-solid fa-pen-to-square"></i>
+                        <button onclick="openEditListingModal('${item.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-blue-600/15 border border-blue-500/30 text-blue-300 hover:bg-blue-600 hover:text-white transition-colors font-bold" title="Revisi data, harga, lokasi, deskripsi, dan foto">
+                            <i class="fa-solid fa-pen-to-square"></i><span>Edit data/foto</span>
+                        </button>
+                        <button onclick="publishListingToWebsite('${item.id}')" class="p-2 text-slate-400 hover:text-emerald-400 transition-colors" title="Tampilkan listing di halaman website">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </button>
                         <button onclick="deleteListing('${item.id}')" class="p-2 text-slate-400 hover:text-red-400 transition-colors" title="Hapus Listing">
                             <i class="fa-solid fa-trash"></i>
@@ -2635,6 +2651,35 @@
             showDriveSyncToast(syncResult, 'Data pengajuan manual berhasil disimpan.');
         }
 
+        // Membuka formulir listing dengan label khusus untuk upload ke katalog publik.
+        function openUploadListingTool() {
+            openAddListingModal();
+            const titleEl = document.querySelector('#add-listing-modal h3');
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-sky-400"></i> Upload Listing ke Website';
+            const submitBtn = document.querySelector('#add-listing-modal form button[type="submit"]');
+            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1"></i> Simpan & Tampilkan di Website';
+        }
+
+        function publishListingToWebsite(id) {
+            const item = listings.find(entry => String(entry.id) === String(id));
+            if (!item) {
+                showToast('Listing tidak ditemukan.', 'error');
+                return;
+            }
+            saveListings();
+            showSection('public-page');
+            setTimeout(() => {
+                const search = document.getElementById('public-search');
+                if (search) search.value = '';
+                const filter = document.getElementById('public-filter-category');
+                if (filter) filter.value = 'Semua';
+                renderPublicListings();
+                const target = document.getElementById('listing');
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                showToast('Listing tampil pada katalog halaman website ini.', 'success');
+            }, 80);
+        }
+
         function openAddListingModal() {
             const modal = document.getElementById('add-listing-modal');
             const titleEl = modal.querySelector('h3');
@@ -2643,6 +2688,8 @@
             delete modal.dataset.editId;
             const form = modal.querySelector('form');
             if (form) form.reset();
+            const submitBtn = modal.querySelector('form button[type="submit"]');
+            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Listing';
             document.getElementById('l-files-preview').innerHTML = '';
             modal.classList.remove('hidden');
         }
@@ -2653,7 +2700,7 @@
 
             const modal = document.getElementById('add-listing-modal');
             const titleEl = modal.querySelector('h3');
-            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square text-blue-400"></i> Edit Listing Properti';
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square text-blue-400"></i> Edit Data & Foto Properti';
             modal.dataset.mode = 'edit';
             modal.dataset.editId = id;
 
@@ -2666,7 +2713,12 @@
             document.getElementById('l-lb').value = item.lb || '';
             document.getElementById('l-image').value = item.image || '';
             document.getElementById('l-desc').value = item.desc || '';
-            document.getElementById('l-files-preview').innerHTML = '';
+            const preview = document.getElementById('l-files-preview');
+            preview.innerHTML = item.image
+                ? `<div class="col-span-3 rounded-xl border border-slate-700 bg-slate-950/70 p-2 flex items-center gap-3"><img src="${safeText(item.image)}" alt="Foto listing saat ini" class="w-20 h-16 object-cover rounded-lg" onerror="this.style.display='none'"><div class="text-[10px] text-slate-300"><strong class="block text-white">Foto utama saat ini</strong>Ganti URL gambar atau pilih foto baru di bawah. Lampiran lama tetap dipertahankan.</div></div>`
+                : '<div class="col-span-3 text-[10px] text-slate-400">Listing ini belum memiliki foto utama. Masukkan URL gambar atau unggah foto baru.</div>';
+            const submitBtn = modal.querySelector('form button[type="submit"]');
+            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Revisi Data & Foto';
             modal.classList.remove('hidden');
         }
 
@@ -2700,7 +2752,7 @@
                 lb: document.getElementById('l-lb').value,
                 sertifikat: existingListing ? existingListing.sertifikat : 'Terverifikasi',
                 zonasi: existingListing ? existingListing.zonasi : 'Kawasan Industri',
-                image: document.getElementById('l-image').value || (existingListing && existingListing.image) || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+                image: document.getElementById('l-image').value.trim() || (existingListing && existingListing.image) || '',
                 attachments: [
                     ...((existingListing && Array.isArray(existingListing.attachments)) ? existingListing.attachments : []),
                     ...await Promise.all(Array.from(document.getElementById('l-files').files).map(fileToDataUrl))
