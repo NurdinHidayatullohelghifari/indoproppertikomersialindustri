@@ -430,15 +430,63 @@
       #admin-page { overflow-x: auto; }
       #admin-page table { min-width: 760px; }
       #public-submission-form .grid { align-items: start; }
+      #form-section { max-height: 76vh; overflow-y: auto; border-radius: 1rem; }
+      #form-section h2 { font-size: 1rem; line-height: 1.35; }
+      #form-section .mb-5 { margin-bottom: .6rem; padding-bottom: .6rem; }
+      #form-section #public-submission-form { gap: .5rem; }
+      #public-submission-form input, #public-submission-form select, #public-submission-form textarea, #public-submission-form button { min-height: 34px; padding-top: .45rem; padding-bottom: .45rem; }
+      #public-submission-form textarea { min-height: 60px; }
+      .google-form-responsive { width: 100%; }
+      .google-form-responsive iframe { display: block; width: 100%; max-width: 100%; border: 0; }
+      @media (max-width: 640px) {
+        .google-form-responsive iframe { height: 2200px; min-height: 2200px; }
+      }
       @media (max-width: 640px) {
         main, section { scroll-margin-top: 5rem; }
         #listings-container { grid-template-columns: minmax(0, 1fr) !important; }
         #public-submission-form .grid.grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
+        #form-section { max-height: none; overflow: visible; }
         #admin-page { padding: .75rem !important; }
         .glass-panel { min-width: 0; }
       }
     </style>
 
+
+    <style id="compact-half-screen-form">
+      /* Form dibuat ringkas; kolom iklan di samping formulir dihapus. */
+      #form-section {
+        width: 100%;
+        max-width: 620px;
+        max-height: 50vh !important;
+        overflow-y: auto !important;
+        padding: .75rem !important;
+        border-radius: .9rem !important;
+      }
+      #form-section h2 { font-size: .95rem !important; line-height: 1.25 !important; }
+      #form-section p { font-size: .72rem; line-height: 1.35; }
+      #form-section .mb-5 { margin-bottom: .45rem !important; padding-bottom: .45rem !important; }
+      #form-section #public-submission-form { gap: .4rem !important; }
+      #public-submission-form label { font-size: .68rem !important; margin-bottom: .15rem !important; }
+      #public-submission-form input,
+      #public-submission-form select,
+      #public-submission-form textarea,
+      #public-submission-form button {
+        min-height: 30px !important;
+        padding: .35rem .5rem !important;
+        font-size: .72rem !important;
+        border-radius: .55rem !important;
+      }
+      #public-submission-form textarea { min-height: 44px !important; }
+      #public-submission-form .text-\[11px\] { font-size: .62rem !important; }
+      @media (min-width: 1024px) {
+        #form-section { max-width: 50vw; }
+        #form-ad-aside { align-self: start; }
+      }
+      @media (max-width: 767px) {
+        #form-section { max-height: none !important; max-width: 100%; overflow: visible !important; }
+        #form-ad-aside { max-height: none; min-height: 130px !important; }
+      }
+    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
 
@@ -499,8 +547,8 @@
                 <div class="absolute bottom-1/4 -left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
                 
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div class="grid lg:grid-cols-12 gap-12 items-center">
-                        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="grid lg:grid-cols-12 gap-5 items-start">
+                        <div class="lg:col-span-5 space-y-5 text-center lg:text-left">
                             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-wider">
                                 <i class="fa-solid fa-certificate"></i> Broker Spesialis Komersial & Industri
                             </div>
@@ -529,7 +577,7 @@
                             </div>
                         </div>
 
-                        <div id="form-section" class="lg:col-span-5 bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+                        <div id="form-section" class="lg:col-span-7 bg-white text-slate-900 rounded-2xl p-3 sm:p-4 shadow-2xl border border-slate-200 relative">
                             <div id="sync-status-banner" class="mb-4 hidden rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-slate-700">
                                 <div class="flex items-start gap-2">
                                     <i class="fa-solid fa-circle-info mt-0.5 text-amber-600"></i>
@@ -548,7 +596,9 @@
                                 <p class="text-xs text-slate-500 mt-1">Isi formulir di bawah ini. Info properti akan ditampilkan di katalog publik; nama dan nomor WhatsApp Anda tetap privat.</p>
                             </div>
 
-                            <form id="public-submission-form" onsubmit="handlePublicSubmit(event)" class="space-y-3.5">
+                            <div>
+                                <p class="text-xs text-slate-500 leading-relaxed mb-4">Pilih jenis layanan. Jika kategori tidak tersedia, pilih <strong>Lainnya</strong> untuk mengetik sendiri. Pengajuan baru menunggu pemeriksaan admin sebelum ditayangkan.</p>
+                                <form id="public-submission-form" onsubmit="handlePublicSubmit(event)" class="space-y-3.5">
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Pengajuan <span class="text-red-500">*</span></label>
@@ -563,10 +613,15 @@
                                             <option value="Lahan Industri">Lahan Industri</option>
                                             <option value="Bangunan Pabrik">Bangunan Pabrik</option>
                                             <option value="Gudang Logistik">Gudang Logistik</option>
+                                            <option value="Rumah">Rumah</option>
                                             <option value="Ruko / Komersial">Ruko / Komersial</option>
-                                            <option value="Lahan Lainnya">Lahan Lainnya</option>
+                                            <option value="Lainnya">Lainnya (ketik manual)</option>
                                         </select>
                                     </div>
+                                </div>
+                                <div id="pub-category-other-wrap" class="hidden">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tulis kategori lainnya <span class="text-red-500">*</span></label>
+                                    <input type="text" id="pub-category-other" placeholder="Contoh: rumah, apartemen, hotel, tanah perkebunan" class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
                                 </div>
 
                                 <div>
@@ -611,6 +666,7 @@
                                     <i class="fa-solid fa-paper-plane"></i> Kirim Formulir Pengajuan
                                 </button>
                             </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -790,11 +846,14 @@
                         </div>
                         <div>
                             <h1 class="text-xl font-extrabold text-white">Dashboard Admin System</h1>
-                            <p class="text-xs text-slate-400">Kelola pengajuan masuk, katalog listing & manajemen kolom iklan ads</p>
+                            <p class="text-xs text-slate-400">Kelola pengajuan masuk dan katalog listing</p>
                         </div>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                        <a href="https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white transition-all flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-table"></i> Hasil Pengajuan (Google Sheets)
+                        </a>
                         <div class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/80 px-2 py-1.5">
                             <i class="fa-solid fa-link text-amber-400 text-[10px]"></i>
                             <input id="drive-script-url-input" type="text" placeholder="https://script.google.com/..." class="w-52 bg-transparent text-[10px] text-slate-200 placeholder:text-slate-500 outline-none">
@@ -803,9 +862,6 @@
                         <div id="system-mode-badge" class="px-3 py-2 text-[10px] font-bold rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 hidden"></div>
                         <button onclick="openAddListingModal()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 transition-all flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-plus"></i> Tambah Listing Baru
-                        </button>
-                        <button onclick="openAdConfigModal()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all flex items-center gap-1.5 shadow-md">
-                            <i class="fa-solid fa-rectangle-ad"></i> Kelola Iklan Ads
                         </button>
                         <button onclick="openManualAddModal()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition-all flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-file-pen"></i> Input Manual
@@ -930,82 +986,7 @@
         </div>
     </main>
 
-    <!-- MODAL CONFIG IKLAN ADS -->
-    <div id="ad-config-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border border-slate-800 overflow-y-auto max-h-[90vh]">
-            <button onclick="closeAdConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-
-            <h3 class="text-lg font-bold text-white border-b border-slate-800 pb-3 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-rectangle-ad text-purple-400"></i> Kelola Kolom Iklan Ads Otomatis
-            </h3>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Slot Iklan</label>
-                    <select id="ad-slot-select" onchange="loadAdSlotData()" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
-                        <option value="top">Slot Atas (Di bawah Header)</option>
-                        <option value="middle">Slot Tengah (Di antara Kategori & Katalog)</option>
-                        <option value="bottom">Slot Bawah (Di atas Keunggulan)</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="ad-active" class="w-4 h-4 rounded bg-slate-950 border-slate-700 text-purple-600 focus:ring-purple-500">
-                    <label for="ad-active" class="text-xs font-semibold text-slate-200">Aktifkan Iklan di Slot Ini</label>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Jaringan / Format Iklan</label>
-                    <select id="ad-type" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
-                        <option value="banner">Banner Gambar (Link Gambar & Target Link)</option>
-                        <option value="adsense">Google AdSense</option>
-                        <option value="monetag">Monetag</option>
-                        <option value="adsterra">Adsterra</option>
-                        <option value="html">Kode Iklan Lain / HTML</option>
-                    </select>
-                </div>
-
-                <div id="ad-banner-fields" class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">URL Gambar Banner</label>
-                        <input type="text" id="ad-image-url" placeholder="https://images.unsplash.com/..." class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">URL Tautan Tujuan (Redirect Link)</label>
-                        <input type="text" id="ad-link-url" placeholder="https://wa.me/..." class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
-                    </div>
-                </div>
-
-                <div id="ad-adsense-fields" class="space-y-3 hidden">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Publisher ID</label>
-                        <input type="text" id="ad-adsense-client" placeholder="ca-pub-XXXXXXXXXXXXXXXX" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Ad Slot ID</label>
-                        <input type="text" id="ad-adsense-slot" inputmode="numeric" placeholder="1234567890" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
-                    </div>
-                    <p class="text-[11px] text-slate-400">Gunakan Publisher ID dan Slot ID dari akun AdSense yang sudah disetujui. Penayangan tetap tunduk pada kebijakan dan persetujuan Google.</p>
-                </div>
-
-                <div id="ad-code-fields" class="space-y-3 hidden">
-                    <div>
-                        <label id="ad-code-label" class="block text-xs font-semibold text-slate-300 mb-1">Kode iklan dari jaringan</label>
-                        <textarea id="ad-html-code" rows="6" placeholder="Tempel kode unit iklan dari dashboard publisher." class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono"></textarea>
-                    </div>
-                    <p class="text-[11px] text-amber-300">Kode pihak ketiga berjalan di situs publik. Tempel hanya kode unit iklan resmi dari akun Anda. Kode verifikasi domain / header mungkin perlu dipasang terpisah di &lt;head&gt;.</p>
-                </div>
-
-                <button onclick="saveAdConfig()" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all">
-                    Simpan & Terbitkan Iklan
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div id="login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-800">
             <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
@@ -1224,6 +1205,24 @@
         </div>
     </div>
 
+    <div id="publication-choice-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="publication-choice-title">
+        <div class="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl">
+            <div class="flex items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400"><i class="fa-solid fa-globe text-lg"></i></div>
+                <div class="min-w-0">
+                    <h2 id="publication-choice-title" class="text-base font-extrabold text-white">Konfirmasi Pengajuan Properti</h2>
+                    <p id="publication-choice-description" class="mt-1 text-xs leading-relaxed text-slate-400">Pilih apakah data ini akan ditayangkan di katalog publik. Data kontak pemohon tidak ditampilkan di katalog.</p>
+                </div>
+            </div>
+            <div class="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <button type="button" onclick="handlePublicationChoice('publish')" class="rounded-xl bg-emerald-600 px-3 py-3 text-xs font-extrabold text-white transition hover:bg-emerald-500"><i class="fa-solid fa-eye mr-1"></i> Tayangkan di Web</button>
+                <button type="button" onclick="handlePublicationChoice('hidden')" class="rounded-xl border border-slate-600 bg-slate-800 px-3 py-3 text-xs font-extrabold text-slate-200 transition hover:bg-slate-700"><i class="fa-solid fa-eye-slash mr-1"></i> Jangan Tayangkan</button>
+            </div>
+            <button type="button" onclick="closePublicationChoice()" class="mt-3 w-full rounded-xl px-3 py-2 text-xs font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-white">Batal</button>
+            <p class="mt-3 text-[10px] leading-relaxed text-slate-500">Catatan: pilihan ini tersimpan di browser bila backend belum dikonfigurasi. Untuk tampil ke semua pengunjung, sinkronisasi server harus aktif.</p>
+        </div>
+    </div>
+
     <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700">
         <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
         <span id="toast-msg" class="text-xs font-medium">Notifikasi Sistem</span>
@@ -1330,6 +1329,7 @@
         ];
 
         let listings = [];
+        let pendingPublicationId = null;
         let submissions = [];
         let adConfigs = {};
         let isLoggedIn = false;
@@ -1350,6 +1350,7 @@
         const isGoogleSyncEnabled = () => !!getGoogleAppsScriptUrl() && !IS_LOCAL_FILE;
 
         const DEFAULT_ADS = {
+            form: { active: false, type: 'adsense', imageUrl: '', linkUrl: '', adsenseClient: '', adsenseSlot: '', htmlCode: '' },
             top: { active: true, type: 'banner', imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80', linkUrl: 'https://wa.me/6282126526162', adsenseClient: '', adsenseSlot: '', htmlCode: '' },
             middle: { active: true, type: 'banner', imageUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80', linkUrl: 'https://wa.me/6282126526162', adsenseClient: '', adsenseSlot: '', htmlCode: '' },
             bottom: { active: false, type: 'banner', imageUrl: '', linkUrl: '', adsenseClient: '', adsenseSlot: '', htmlCode: '' }
@@ -1372,7 +1373,19 @@
             });
         }
 
+        function toggleOtherPropertyCategory() {
+            const select = document.getElementById('pub-category');
+            const wrap = document.getElementById('pub-category-other-wrap');
+            const input = document.getElementById('pub-category-other');
+            if (!select || !wrap || !input) return;
+            const show = select.value === 'Lainnya';
+            wrap.classList.toggle('hidden', !show);
+            input.required = show;
+            if (!show) input.value = '';
+        }
         window.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('pub-category')?.addEventListener('change', toggleOtherPropertyCategory);
+            toggleOtherPropertyCategory();
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1567,6 +1580,8 @@
         }
 
         function renderDynamicAds() {
+            if (!adConfigs.form) adConfigs.form = DEFAULT_ADS.form;
+            renderSlotAd('form', 'dynamic-ad-form');
             renderSlotAd('top', 'dynamic-ad-top');
             renderSlotAd('middle', 'dynamic-ad-middle');
             renderSlotAd('bottom', 'dynamic-ad-bottom');
@@ -1610,7 +1625,7 @@
                     document.head.appendChild(loader);
                 }
                 container.innerHTML = `
-                    <div class="my-4 p-3 rounded-2xl border border-slate-800 bg-white/95 relative min-h-24">
+                    <div class="my-2 p-2 rounded-xl border border-slate-200 bg-white/95 relative min-h-24">
                         <div class="absolute top-2 right-2 z-10 bg-slate-950/80 text-[9px] text-amber-400 px-2 py-0.5 rounded uppercase tracking-wider font-bold">AdSense</div>
                         <ins class="adsbygoogle block" style="display:block;min-height:90px"
                             data-ad-client="${escapeHtml(client)}"
@@ -1627,7 +1642,7 @@
             } else if (['monetag', 'adsterra', 'html'].includes(ad.type) && ad.htmlCode) {
                 const providerName = ad.type === 'html' ? 'Iklan / Sponsored' : ad.type;
                 container.innerHTML = `
-                    <div class="my-4 p-4 rounded-2xl border border-slate-800 bg-slate-900 relative min-h-20">
+                    <div class="my-2 p-2 rounded-xl border border-slate-700 bg-slate-900 relative min-h-20">
                         <div class="absolute top-2 right-2 z-10 bg-slate-950/80 text-[9px] text-amber-400 px-2 py-0.5 rounded uppercase tracking-wider font-bold">${providerName}</div>
                         <div class="ad-code-mount pt-4"></div>
                     </div>
@@ -2000,11 +2015,18 @@
                 showToast('Form online belum terhubung ke sistem penerimaan. Silakan hubungi kami melalui WhatsApp.', 'error');
                 return;
             }
+            const categorySelect = document.getElementById('pub-category');
+            const otherCategory = document.getElementById('pub-category-other');
+            if (categorySelect.value === 'Lainnya' && !otherCategory.value.trim()) {
+                otherCategory.focus();
+                showToast('Silakan ketik kategori properti pada kolom Lainnya.', 'error');
+                return;
+            }
             const newEntry = {
                 id: createUniqueId('IP'),
                 timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
                 type: document.getElementById('pub-type').value,
-                category: document.getElementById('pub-category').value,
+                category: document.getElementById('pub-category').value === 'Lainnya' ? document.getElementById('pub-category-other').value.trim() : document.getElementById('pub-category').value,
                 name: document.getElementById('pub-name').value,
                 phone: document.getElementById('pub-phone').value,
                 location: document.getElementById('pub-location').value,
@@ -2021,6 +2043,7 @@
                 saveSubmissions();
                 // Pengajuan baru berstatus menunggu admin; jangan tampilkan di katalog publik sebelum dikonfirmasi.
                 document.getElementById('public-submission-form').reset();
+                toggleOtherPropertyCategory();
                 document.getElementById('pub-files-preview').innerHTML = '';
                 showDriveSyncToast('not-configured', 'Pengajuan berhasil diterima.');
                 return;
@@ -2036,6 +2059,7 @@
             saveSubmissions();
             // Listing publik baru dibuat oleh admin melalui tombol Konfirmasi & Posting.
             document.getElementById('public-submission-form').reset();
+            toggleOtherPropertyCategory();
             document.getElementById('pub-files-preview').innerHTML = '';
             showDriveSyncToast(syncResult, 'Pengajuan berhasil diterima.');
         }
@@ -2252,14 +2276,26 @@
                 if (canPost) {
                     if (item.isPosted) {
                         postingAction = `
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
-                                <i class="fa-solid fa-circle-check"></i> Terposting
-                            </span>
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
+                                    <i class="fa-solid fa-circle-check"></i> Tayang di Web
+                                </span>
+                                <button onclick="publishToListing('${item.id}')" class="text-[10px] font-semibold text-slate-400 underline hover:text-amber-300">Ubah keputusan</button>
+                            </div>
+                        `;
+                    } else if (item.publicationStatus === 'hidden') {
+                        postingAction = `
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-800 text-slate-300 border border-slate-600 text-[10px] font-bold">
+                                    <i class="fa-solid fa-eye-slash"></i> Tidak Ditayangkan
+                                </span>
+                                <button onclick="publishToListing('${item.id}')" class="text-[10px] font-semibold text-amber-300 underline hover:text-amber-200">Ubah keputusan</button>
+                            </div>
                         `;
                     } else {
                         postingAction = `
                             <button onclick="publishToListing('${item.id}')" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] transition-all flex items-center justify-center gap-1 mx-auto shadow-sm">
-                                <i class="fa-solid fa-upload"></i> Konfirmasi & Posting
+                                <i class="fa-solid fa-check-double"></i> Konfirmasi
                             </button>
                         `;
                     }
@@ -2310,7 +2346,74 @@
             }).join('');
         }
 
-        async function publishToListing(id) {
+        function publishToListing(id) {
+            const sub = submissions.find(s => s.id === id);
+            if (!sub) return;
+            pendingPublicationId = id;
+            const modal = document.getElementById('publication-choice-modal');
+            const description = document.getElementById('publication-choice-description');
+            if (description) description.textContent = `Pengajuan ${sub.name || ''} — pilih apakah akan ditayangkan di katalog publik. Data kontak pemohon tidak ditampilkan.`;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closePublicationChoice() {
+            const modal = document.getElementById('publication-choice-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            pendingPublicationId = null;
+        }
+
+        async function handlePublicationChoice(choice) {
+            const id = pendingPublicationId;
+            const sub = submissions.find(s => s.id === id);
+            if (!sub) { closePublicationChoice(); return; }
+            closePublicationChoice();
+            if (choice === 'publish') {
+                await executePublishToListing(id);
+                return;
+            }
+            if (choice === 'hidden') {
+                const previous = { publicationStatus: sub.publicationStatus, isPosted: sub.isPosted, reviewedAt: sub.reviewedAt };
+                const isRequest = /cari|request/i.test(String(sub.type || ''));
+                const expectedTitle = `${isRequest ? 'Mencari ' : ''}${sub.category || 'Properti'} - ${sub.location || 'Lokasi belum diisi'}`;
+                const existingListing = listings.find(item => String(item.sourceSubmissionId || '') === String(sub.id) || (sub.isPosted && item.title === expectedTitle));
+
+                // Bila sebelumnya sudah tayang, hapus dari katalog publik terlebih dahulu.
+                if (sub.isPosted && existingListing && isGoogleSyncEnabled()) {
+                    const deleteResult = await syncRecordToGoogleDrive({ id: existingListing.id }, 'listing', 'delete');
+                    if (!isSaveConfirmed(deleteResult)) {
+                        showDriveSyncToast(deleteResult, 'Membatalkan penayangan');
+                        return;
+                    }
+                }
+                if (sub.isPosted && existingListing) {
+                    listings = listings.filter(item => String(item.id) !== String(existingListing.id));
+                    saveListings();
+                }
+
+                sub.publicationStatus = 'hidden';
+                sub.isPosted = false;
+                sub.reviewedAt = new Date().toISOString();
+                const result = isGoogleSyncEnabled()
+                    ? await syncRecordToGoogleDrive(sub, 'submission')
+                    : 'not-configured';
+                if (isGoogleSyncEnabled() && !isSaveConfirmed(result)) {
+                    sub.publicationStatus = previous.publicationStatus;
+                    sub.isPosted = previous.isPosted;
+                    sub.reviewedAt = previous.reviewedAt;
+                    renderAdminTable();
+                    showDriveSyncToast(result, 'Keputusan publikasi');
+                    return;
+                }
+                saveSubmissions();
+                renderAdminTable();
+                renderPublicListings();
+                showDriveSyncToast(result, sub.isPosted ? 'Keputusan publikasi diperbarui.' : 'Dikonfirmasi: tidak ditayangkan di web.');
+            }
+        }
+
+        async function executePublishToListing(id) {
             const sub = submissions.find(s => s.id === id);
             if (!sub) return;
 
@@ -2330,6 +2433,7 @@
 
                 const newListing = {
                     id: createUniqueId('LIST'),
+                    sourceSubmissionId: sub.id,
                     title: isPropertyRequest
                         ? `Mencari ${sub.category} - ${sub.location}`
                         : `${sub.category} ${sub.location}`,
@@ -2360,6 +2464,8 @@
                     const previousIsPosted = sub.isPosted;
                     listings.unshift(newListing);
                     sub.isPosted = true;
+                    sub.publicationStatus = 'published';
+                    sub.reviewedAt = new Date().toISOString();
                     sub.status = 'Selesai';
                     try {
                         localStorage.setItem('indoproperti_listings', JSON.stringify(listings));
@@ -2396,6 +2502,8 @@
                 listings.unshift(newListing);
                 saveListings();
                 sub.isPosted = true;
+                sub.publicationStatus = 'published';
+                sub.reviewedAt = new Date().toISOString();
                 sub.status = 'Selesai';
                 const submissionSyncResult = await syncRecordToGoogleDrive(sub, 'submission');
                 if (!isSaveConfirmed(submissionSyncResult)) {
