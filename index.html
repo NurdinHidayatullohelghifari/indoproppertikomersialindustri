@@ -10,7 +10,6 @@
 <meta name="keywords" content="jual lahan industri, lahan industri, jual pabrik, gudang logistik, properti komersial, properti industri, IndoProperti">
 <meta name="author" content="IndoProperti Komersial & Industri">
 <meta name="google-site-verification" content="SSKeX-eNpEEeYPJshr8UvgbxewVT5LERCD5MoqzJ_fA">
-
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
 
 <script type="application/ld+json">
@@ -146,6 +145,152 @@ section[id], div[id] { scroll-margin-top: 96px; }
   100% { filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.9)); }
 }
 
+/* Upload Tab */
+.upload-tab {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  transition: all 0.2s;
+}
+.upload-tab.active {
+  background: #f59e0b;
+  color: #1a1208;
+  border-color: #f59e0b;
+}
+
+/* Drop Area */
+.drop-area {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 18px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #f8fafc;
+}
+.drop-area:hover, .drop-area.dragover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+.drop-area.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Preview Grid 4 kolom */
+.foto-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.foto-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.foto-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-item .foto-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 22px;
+  color: #94a3b8;
+}
+
+.foto-item .foto-remove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: rgba(239, 68, 68, 0.92);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.foto-item .foto-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  font-size: 8px;
+  padding: 2px 3px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* URL Row */
+.url-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.url-row input {
+  flex: 1;
+  font-size: 11px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #1e293b;
+}
+.url-row input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245,158,11,0.2);
+}
+.btn-url-add {
+  padding: 7px 12px;
+  background: #f59e0b;
+  color: #1a1208;
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-url-add:hover { background: #d97706; }
+.btn-url-del {
+  padding: 7px 10px;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 11px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-url-del:hover { background: #fecaca; }
+
 @media (max-width: 640px) {
   html { scroll-padding-top: 88px; }
   body { font-size: 15px; }
@@ -182,7 +327,6 @@ section[id], div[id] { scroll-margin-top: 96px; }
         <span class="text-[10px] text-amber-400 font-semibold tracking-widest uppercase">Komersial & Industri</span>
       </div>
     </a>
-
     <nav class="hidden lg:flex items-center space-x-6 text-sm font-semibold">
       <a href="#beranda" class="text-emerald-glow transition-all">Beranda</a>
       <a href="#kategori" class="text-emerald-glow transition-all">Kategori</a>
@@ -191,7 +335,6 @@ section[id], div[id] { scroll-margin-top: 96px; }
       <a href="#form-section" class="text-emerald-glow transition-all">Form Pengajuan</a>
       <a href="#kontak" class="text-emerald-glow transition-all">Kontak</a>
     </nav>
-
     <div class="flex items-center space-x-3">
       <a href="#form-section" class="hidden sm:inline-flex px-4 py-2 text-xs md:text-sm font-bold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 transition-all shadow-lg items-center gap-2">
         <i class="fa-solid fa-paper-plane"></i><span>Jual / Cari Lahan</span>
@@ -201,7 +344,6 @@ section[id], div[id] { scroll-margin-top: 96px; }
       </button>
     </div>
   </div>
-
   <div id="mobile-menu" class="hidden lg:hidden bg-slate-900 border-b border-slate-800 px-5 py-4 space-y-3 font-semibold">
     <a href="#beranda" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm">Beranda</a>
     <a href="#kategori" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm">Kategori</a>
@@ -312,7 +454,47 @@ section[id], div[id] { scroll-margin-top: 96px; }
 
               <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Deskripsi / Catatan</label>
-                <textarea id="deskripsi" rows="3" placeholder="Ketentuan zonasi, akses jalan, daya listrik..." class="w-full text-xs sm:text-sm px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50"></textarea>
+                <textarea id="deskripsi" rows="2" placeholder="Ketentuan zonasi, akses jalan, daya listrik..." class="w-full text-xs sm:text-sm px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50"></textarea>
+              </div>
+
+              <!-- UPLOAD FOTO MAX 4 -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-2">
+                  <i class="fa-solid fa-camera text-amber-500 mr-1"></i>
+                  Upload Foto Properti <span class="text-slate-400 font-normal">(maks. 4)</span>
+                </label>
+
+                <!-- Tab -->
+                <div class="flex gap-2 mb-3">
+                  <button type="button" id="tabDevice" class="upload-tab active" onclick="switchUploadTab('device')">
+                    <i class="fa-solid fa-mobile-screen-button mr-1"></i>HP / PC
+                  </button>
+                  <button type="button" id="tabUrl" class="upload-tab" onclick="switchUploadTab('url')">
+                    <i class="fa-solid fa-link mr-1"></i>URL Foto
+                  </button>
+                </div>
+
+                <!-- Panel HP/PC -->
+                <div id="panelDevice">
+                  <div class="drop-area" id="dropArea" onclick="document.getElementById('fotoFileInput').click()">
+                    <input type="file" id="fotoFileInput" multiple accept="image/*,.pdf" class="hidden" onchange="onDeviceFileChange(event)">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-amber-400 mb-2 block"></i>
+                    <p class="text-xs font-semibold text-slate-600">Klik atau seret foto ke sini</p>
+                    <p class="text-[10px] text-slate-400 mt-1">JPG, PNG, PDF • Maks. 4 foto</p>
+                  </div>
+                </div>
+
+                <!-- Panel URL -->
+                <div id="panelUrl" class="hidden">
+                  <div id="urlRowsContainer"></div>
+                  <button type="button" id="btnAddUrl" onclick="addUrlRow()" class="mt-2 text-[11px] font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1">
+                    <i class="fa-solid fa-plus-circle"></i> Tambah URL Foto
+                  </button>
+                </div>
+
+                <!-- Preview 4 kolom -->
+                <div id="fotoGrid" class="foto-grid"></div>
+                <p id="fotoCountLabel" class="text-[10px] text-slate-500 mt-1"></p>
               </div>
 
               <button type="submit" id="submitBtn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold text-sm rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
@@ -481,22 +663,109 @@ section[id], div[id] { scroll-margin-top: 96px; }
 </footer>
 
 <script>
-// URL Apps Script - hanya berjalan di backend, tidak tampil di website
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsLHcyrPVOFTASDnKTe660fof97PO6-Kecr_gZIlSws5LtI-E6LitzA_ljNEf7dHkC/exec';
+const MAX_FOTO = 4;
+let fotoList = [];
 
 function toggleMobileMenu() {
-  const menu = document.getElementById('mobile-menu');
-  if (menu) menu.classList.toggle('hidden');
+  const m = document.getElementById('mobile-menu');
+  if (m) m.classList.toggle('hidden');
 }
 
-async function handleSubmit(event) {
-  event.preventDefault();
-  const submitBtn = document.getElementById('submitBtn');
-  const originalHTML = submitBtn.innerHTML;
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+function switchUploadTab(tab) {
+  document.getElementById('tabDevice').classList.toggle('active', tab === 'device');
+  document.getElementById('tabUrl').classList.toggle('active', tab === 'url');
+  document.getElementById('panelDevice').classList.toggle('hidden', tab !== 'device');
+  document.getElementById('panelUrl').classList.toggle('hidden', tab !== 'url');
+}
 
-  const formData = {
+function onDeviceFileChange(e) {
+  Array.from(e.target.files).forEach(file => {
+    if (fotoList.length >= MAX_FOTO) return;
+    const src = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+    fotoList.push({ type: 'file', src, name: file.name, file });
+  });
+  e.target.value = '';
+  renderFotoGrid();
+}
+
+function addUrlRow() {
+  if (fotoList.length >= MAX_FOTO) { showNotif('Maksimal ' + MAX_FOTO + ' foto.', 'warning'); return; }
+  const container = document.getElementById('urlRowsContainer');
+  const uid = 'url_' + Date.now();
+  const row = document.createElement('div');
+  row.className = 'url-row';
+  row.id = 'row_' + uid;
+  row.innerHTML = `
+    <input type="url" id="${uid}" placeholder="https://contoh.com/foto.jpg">
+    <button type="button" class="btn-url-add" onclick="confirmUrlAdd('${uid}')"><i class="fa-solid fa-plus"></i> Tambah</button>
+    <button type="button" class="btn-url-del" onclick="document.getElementById('row_${uid}').remove();updateAddUrlBtn();"><i class="fa-solid fa-trash"></i></button>
+  `;
+  container.appendChild(row);
+  updateAddUrlBtn();
+}
+
+function confirmUrlAdd(uid) {
+  const input = document.getElementById(uid);
+  if (!input) return;
+  const url = input.value.trim();
+  if (!url) { showNotif('Masukkan URL foto.', 'warning'); return; }
+  if (!url.startsWith('http')) { showNotif('URL harus diawali http:// atau https://', 'warning'); return; }
+  if (fotoList.length >= MAX_FOTO) { showNotif('Maksimal ' + MAX_FOTO + ' foto.', 'warning'); return; }
+  fotoList.push({ type: 'url', src: url, name: 'Foto URL ' + (fotoList.length + 1) });
+  const row = document.getElementById('row_' + uid);
+  if (row) row.remove();
+  renderFotoGrid();
+  updateAddUrlBtn();
+}
+
+function updateAddUrlBtn() {
+  const btn = document.getElementById('btnAddUrl');
+  const container = document.getElementById('urlRowsContainer');
+  if (!btn || !container) return;
+  const total = fotoList.length + container.querySelectorAll('.url-row').length;
+  btn.style.display = total >= MAX_FOTO ? 'none' : 'flex';
+}
+
+function renderFotoGrid() {
+  const grid = document.getElementById('fotoGrid');
+  const label = document.getElementById('fotoCountLabel');
+  const dropArea = document.getElementById('dropArea');
+  if (!grid) return;
+
+  grid.innerHTML = fotoList.map((item, i) => {
+    const isImg = item.src && (item.type === 'url' || (item.file && item.file.type.startsWith('image/')));
+    return `
+      <div class="foto-item">
+        ${isImg ? `<img src="${item.src}" alt="foto${i}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+        <div class="foto-icon" style="display:${isImg ? 'none' : 'flex'}"><i class="fa-solid fa-file-lines"></i></div>
+        <button type="button" class="foto-remove" onclick="removeFoto(${i})">✕</button>
+        <div class="foto-label">${item.name}</div>
+      </div>
+    `;
+  }).join('');
+
+  if (label) label.textContent = fotoList.length > 0 ? fotoList.length + '/' + MAX_FOTO + ' foto dipilih' : '';
+  if (dropArea) dropArea.classList.toggle('disabled', fotoList.length >= MAX_FOTO);
+  updateAddUrlBtn();
+}
+
+function removeFoto(i) {
+  fotoList.splice(i, 1);
+  renderFotoGrid();
+}
+
+async function handleSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+
+  const urlFotos = fotoList.filter(f => f.type === 'url').map(f => f.src);
+  const fileFotos = fotoList.filter(f => f.type === 'file').map(f => f.name);
+
+  const data = {
     jenis: document.getElementById('jenis').value,
     kategori: document.getElementById('kategori').value,
     nama: document.getElementById('nama').value,
@@ -504,90 +773,99 @@ async function handleSubmit(event) {
     lokasi: document.getElementById('lokasi').value,
     harga: document.getElementById('harga').value || '-',
     luas: document.getElementById('luas').value || '-',
-    deskripsi: document.getElementById('deskripsi').value || '-'
+    deskripsi: document.getElementById('deskripsi').value || '-',
+    jumlahFoto: fotoList.length,
+    fotoUrls: urlFotos.join(', ') || '-',
+    fotoFiles: fileFotos.join(', ') || '-'
   };
 
-  const waMessage =
+  let fotoWA = '';
+  if (fotoList.length > 0) {
+    fotoWA = '\n📷 *Foto (' + fotoList.length + '):*';
+    urlFotos.forEach((u, i) => { fotoWA += '\n  ' + (i+1) + '. ' + u; });
+    if (fileFotos.length) fotoWA += '\n  📎 File: ' + fileFotos.join(', ');
+  }
+
+  const waMsg =
 `*PENGAJUAN PROPERTI INDOPROPERTI*
 
-📋 *Jenis:* ${formData.jenis}
-🏢 *Kategori:* ${formData.kategori}
-👤 *Nama:* ${formData.nama}
-📱 *WhatsApp:* ${formData.whatsapp}
-📍 *Lokasi:* ${formData.lokasi}
-💰 *Harga/Budget:* ${formData.harga}
-📏 *Luas:* ${formData.luas}
+📋 *Jenis:* ${data.jenis}
+🏢 *Kategori:* ${data.kategori}
+👤 *Nama:* ${data.nama}
+📱 *WhatsApp:* ${data.whatsapp}
+📍 *Lokasi:* ${data.lokasi}
+💰 *Harga/Budget:* ${data.harga}
+📏 *Luas:* ${data.luas}${fotoWA}
 📝 *Deskripsi:*
-${formData.deskripsi}
+${data.deskripsi}
 
 ---
 _Terima kasih telah menggunakan layanan IndoProperti!_`;
 
   try {
     await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
+      method: 'POST', mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(data)
     });
+  } catch (_) {}
 
-    document.getElementById('propertyForm').reset();
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = originalHTML;
-    window.open(`https://wa.me/6282126526162?text=${encodeURIComponent(waMessage)}`, '_blank');
-    showNotification('✅ Pengajuan berhasil dikirim! Kami akan segera menghubungi Anda.', 'success');
+  document.getElementById('propertyForm').reset();
+  fotoList = [];
+  renderFotoGrid();
+  document.getElementById('urlRowsContainer').innerHTML = '';
+  updateAddUrlBtn();
+  btn.disabled = false;
+  btn.innerHTML = orig;
 
-  } catch (error) {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = originalHTML;
-    window.open(`https://wa.me/6282126526162?text=${encodeURIComponent(waMessage)}`, '_blank');
-    showNotification('✅ Pengajuan berhasil dikirim via WhatsApp!', 'success');
-  }
+  window.open('https://wa.me/6282126526162?text=' + encodeURIComponent(waMsg), '_blank');
+  showNotif('✅ Pengajuan berhasil dikirim! Kami akan segera menghubungi Anda.', 'success');
 }
 
-function showNotification(message, type) {
-  const existing = document.getElementById('notification');
-  if (existing) existing.remove();
-  const colors = {
-    success: 'bg-emerald-600 text-white',
-    warning: 'bg-amber-500 text-slate-950',
-    error: 'bg-red-600 text-white'
-  };
-  const notif = document.createElement('div');
-  notif.id = 'notification';
-  notif.className = `fixed top-24 right-4 z-50 px-5 py-3 rounded-2xl shadow-2xl text-sm font-bold max-w-sm ${colors[type] || colors.success}`;
-  notif.innerHTML = message;
-  document.body.appendChild(notif);
-  setTimeout(() => {
-    notif.style.opacity = '0';
-    notif.style.transition = 'opacity 0.5s';
-    setTimeout(() => notif.remove(), 500);
-  }, 4000);
+function showNotif(msg, type) {
+  const old = document.getElementById('notif');
+  if (old) old.remove();
+  const colors = { success: 'bg-emerald-600 text-white', warning: 'bg-amber-500 text-slate-950', error: 'bg-red-600 text-white' };
+  const el = document.createElement('div');
+  el.id = 'notif';
+  el.className = 'fixed top-24 right-4 z-50 px-5 py-3 rounded-2xl shadow-2xl text-sm font-bold max-w-sm ' + (colors[type] || colors.success);
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.transition = 'opacity .5s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 4000);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('#mobile-menu a').forEach(link => {
-    link.addEventListener('click', toggleMobileMenu);
-  });
+  document.querySelectorAll('#mobile-menu a').forEach(a => a.addEventListener('click', toggleMobileMenu));
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
+  const dropArea = document.getElementById('dropArea');
+  if (dropArea) {
+    dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('dragover'); });
+    dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
+    dropArea.addEventListener('drop', e => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      if (fotoList.length >= MAX_FOTO) return;
+      Array.from(e.dataTransfer.files).forEach(file => {
+        if (fotoList.length >= MAX_FOTO) return;
+        const src = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+        fotoList.push({ type: 'file', src, name: file.name, file });
+      });
+      renderFotoGrid();
     });
+  }
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) en.target.classList.add('visible'); });
   }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('section, .glass-panel').forEach(el => { el.classList.add('reveal'); obs.observe(el); });
 
-  document.querySelectorAll('section, .glass-panel').forEach(el => {
-    el.classList.add('reveal');
-    observer.observe(el);
-  });
-
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
-      if (href !== '#' && href !== '') {
+      if (href && href !== '#') {
         e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const t = document.querySelector(href);
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   });
