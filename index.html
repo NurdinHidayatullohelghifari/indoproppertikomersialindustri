@@ -418,7 +418,26 @@
                 right: 0.65rem;
             }
         }
-    </style>
+    
+/* FIX UPLOAD: pastikan input file dapat menerima klik di desktop dan HP */
+input[type="file"] {
+  position: relative !important;
+  z-index: 20 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  max-width: 100%;
+}
+input[type="file"]::file-selector-button { cursor: pointer !important; }
+label[for="pub-files"], label[for="l-files"] {
+  cursor: pointer !important;
+  position: relative;
+  z-index: 21;
+}
+
+</style>
 
     <style id="indoproperti-layout-fixes">
       html { scroll-behavior: smooth; }
@@ -656,8 +675,9 @@
                                 </div>
 
                                 <div>
-                                    <label for="pub-files" class="block text-xs font-semibold text-slate-700 mb-1">Upload Beberapa Foto / Dokumen</label>
-                                    <input type="file" id="pub-files" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 bg-slate-50 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-2 file:font-bold file:text-slate-950">
+                                    <label for="pub-files" onclick="document.getElementById('pub-files').click()" class="block text-xs font-semibold text-slate-700 mb-1">Upload Beberapa Foto / Dokumen</label>
+<div class="text-xs text-slate-500 mb-2">Pilih maksimal 3 foto. Dokumen PDF/Word/Excel juga dapat disertakan.</div>
+                                    <input type="file" id="pub-files" aria-label="Pilih maksimal 3 foto dan dokumen untuk pengajuan" title="Pilih maksimal 3 foto; dokumen dapat disertakan" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 bg-slate-50 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-2 file:font-bold file:text-slate-950">
                                     <p class="text-[11px] text-slate-500 mt-1">Pilih beberapa file dari HP/PC. Foto dan dokumen akan dilampirkan pada pengajuan.</p>
                                     <div id="pub-files-preview" class="mt-2 grid grid-cols-3 gap-2"></div>
                                 </div>
@@ -1191,8 +1211,8 @@
                     <input type="text" id="l-image" placeholder="https://images.unsplash.com/..." class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
                 </div>
                 <div>
-                    <label for="l-files" class="block text-[11px] font-semibold text-slate-300 mb-1">Upload Foto/Dokumen Baru (opsional saat revisi)</label>
-                    <input type="file" id="l-files" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
+                    <label for="l-files" onclick="document.getElementById('l-files').click()" class="block text-[11px] font-semibold text-slate-300 mb-1">Upload Foto/Dokumen Baru (opsional saat revisi)</label>
+                    <input type="file" id="l-files" aria-label="Pilih foto atau dokumen untuk listing" title="Klik untuk memilih foto atau dokumen" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white">
                     <div id="l-files-preview" class="mt-2 grid grid-cols-3 gap-2"></div>
                 </div>
 
@@ -1405,12 +1425,22 @@
             const uploadInput = document.getElementById('pub-files');
             if (uploadInput) uploadInput.addEventListener('change', () => {
                 const preview = document.getElementById('pub-files-preview');
+                if (!preview) return;
                 const files = Array.from(uploadInput.files);
+                const images = files.filter(file => file.type && file.type.startsWith('image/'));
+                if (images.length > 3) {
+                    alert('Maksimal 3 foto untuk setiap pengajuan. Silakan pilih ulang foto Anda.');
+                    uploadInput.value = '';
+                    preview.innerHTML = '';
+                    return;
+                }
                 preview.innerHTML = files.map(file => `<div class="rounded-lg border border-slate-200 p-2 text-[10px] text-slate-600 overflow-hidden"><i class="fa-solid ${file.type.startsWith('image/') ? 'fa-image' : 'fa-file-lines'} text-amber-600 mr-1"></i>${escapeHtml(file.name)}<div>${(file.size/1024).toFixed(0)} KB</div></div>`).join('');
             });
             const listingUpload = document.getElementById('l-files');
             if (listingUpload) listingUpload.addEventListener('change', () => {
-                document.getElementById('l-files-preview').innerHTML = Array.from(listingUpload.files).map(file => `<div class="rounded-lg border border-slate-700 p-2 text-[10px] text-slate-300 overflow-hidden">${escapeHtml(file.name)}<div>${(file.size/1024).toFixed(0)} KB</div></div>`).join('');
+                const listingPreview = document.getElementById('l-files-preview');
+                if (!listingPreview) return;
+                listingPreview.innerHTML = Array.from(listingUpload.files).map(file => `<div class="rounded-lg border border-slate-700 p-2 text-[10px] text-slate-300 overflow-hidden">${escapeHtml(file.name)}<div>${(file.size/1024).toFixed(0)} KB</div></div>`).join('');
             });
             const legacyListings = readLegacyRecords('indoproperti_listings');
             const legacySubmissions = readLegacyRecords('indoproperti_submissions');
