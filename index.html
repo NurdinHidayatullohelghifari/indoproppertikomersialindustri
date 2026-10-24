@@ -11,7 +11,6 @@
 <meta name="author" content="IndoProperti Komersial & Industri">
 <meta name="google-site-verification" content="SSKeX-eNpEEeYPJshr8UvgbxewVT5LERCD5MoqzJ_fA">
 
-<!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
 
 <script type="application/ld+json">
@@ -35,13 +34,8 @@
 }
 </script>
 
-<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Font Awesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -50,17 +44,12 @@
 tailwind.config = {
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-      },
+      fontFamily: { sans: ['Inter', 'sans-serif'] },
       colors: {
         brand: {
-          navy: '#0b132b',
-          deepBlue: '#1c2541',
-          accent: '#f59e0b',
-          accentHover: '#d97706',
-          emerald: '#10b981',
-          darkBg: '#080d1a'
+          navy: '#0b132b', deepBlue: '#1c2541',
+          accent: '#f59e0b', accentHover: '#d97706',
+          emerald: '#10b981', darkBg: '#080d1a'
         }
       }
     }
@@ -69,39 +58,15 @@ tailwind.config = {
 </script>
 
 <style>
-/* Base Styles */
-html { 
-  scroll-behavior: smooth; 
-}
+html { scroll-behavior: smooth; }
+body { overflow-x: hidden; }
+section[id], div[id] { scroll-margin-top: 96px; }
 
-body { 
-  overflow-x: hidden; 
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-section[id], div[id] { 
-  scroll-margin-top: 96px; 
-}
-
-/* Scrollbar Styling */
-::-webkit-scrollbar { 
-  width: 8px; 
-  height: 8px; 
-}
-
-::-webkit-scrollbar-track { 
-  background: #0f172a; 
-}
-
-::-webkit-scrollbar-thumb { 
-  background: #334155; 
-  border-radius: 4px; 
-}
-
-::-webkit-scrollbar-thumb:hover { 
-  background: #475569; 
-}
-
-/* Glass Effect */
 .glass-panel {
   background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(12px);
@@ -109,19 +74,11 @@ section[id], div[id] {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-/* Background Pattern */
 .bg-grid-pattern {
   background-image: radial-gradient(rgba(245, 158, 11, 0.15) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
-/* Rainbow Animated Text */
 .text-rainbow-animated {
   background: linear-gradient(90deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bfd, #7a00ff, #ff00c8, #ff0000);
   background-size: 200% auto;
@@ -136,7 +93,6 @@ section[id], div[id] {
   100% { background-position: 200% center; }
 }
 
-/* Emerald Glow Text */
 .text-emerald-glow {
   color: #34d399;
   text-shadow: 0 0 10px rgba(52, 211, 153, 0.8), 0 0 20px rgba(16, 185, 129, 0.5);
@@ -147,7 +103,6 @@ section[id], div[id] {
   text-shadow: 0 0 15px rgba(110, 231, 183, 1), 0 0 30px rgba(52, 211, 153, 0.8);
 }
 
-/* Reveal Animation */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -159,7 +114,6 @@ section[id], div[id] {
   transform: translateY(0);
 }
 
-/* Mobile Sticky CTA */
 .mobile-sticky-cta {
   position: fixed;
   left: 0.75rem;
@@ -179,13 +133,11 @@ section[id], div[id] {
   box-shadow: 0 16px 40px rgba(245, 158, 11, 0.35);
 }
 
-/* Footer Glow */
 .footer-glow {
   background: linear-gradient(90deg, #60a5fa 0%, #facc15 30%, #67e8f9 55%, #fbbf24 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 18px rgba(96, 165, 250, 0.5), 0 0 24px rgba(250, 204, 21, 0.45);
   animation: footerGlowPulse 2.8s ease-in-out infinite alternate;
 }
 
@@ -194,94 +146,18 @@ section[id], div[id] {
   100% { filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.9)); }
 }
 
-/* Google Form Container - OPTIMIZED */
-.form-container {
-  position: relative;
-  width: 100%;
-  min-height: 1000px;
-  height: auto;
-  overflow: hidden;
-  background: transparent;
-}
-
-.form-container iframe {
-  position: relative;
-  width: 100%;
-  min-height: 1000px;
-  height: auto;
-  border: none;
-  display: block;
-  pointer-events: auto;
-  z-index: 1;
-}
-
-/* Responsive Adjustments */
-@media screen and (min-width: 768px) {
-  .form-container {
-    min-height: 1100px;
-  }
-  
-  .form-container iframe {
-    min-height: 1100px;
-  }
-}
-
-@media screen and (min-width: 1024px) {
-  .form-container {
-    min-height: 1200px;
-  }
-  
-  .form-container iframe {
-    min-height: 1200px;
-  }
-}
-
-/* Mobile Responsive */
 @media (max-width: 640px) {
-  html { 
-    scroll-padding-top: 88px; 
-  }
-  
-  body { 
-    font-size: 15px; 
-  }
-  
-  header {
-    background: rgba(10, 9, 8, 0.88);
-    backdrop-filter: blur(18px);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.22);
-  }
-  
-  #beranda {
-    padding-top: 1.5rem !important;
-    padding-bottom: 3rem !important;
-  }
-  
-  #beranda h1 {
-    font-size: clamp(2rem, 7vw, 2.8rem);
-    line-height: 1.08;
-    letter-spacing: -0.04em;
-  }
-  
-  #form-section {
-    border-radius: 1.5rem;
-    padding: 1rem;
-  }
-  
-  .form-container {
-    min-height: 1300px;
-  }
-  
-  .form-container iframe {
-    min-height: 1300px;
-  }
-  
+  html { scroll-padding-top: 88px; }
+  body { font-size: 15px; }
+  header { background: rgba(10, 9, 8, 0.88); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(212, 175, 55, 0.22); }
+  #beranda { padding-top: 1.5rem !important; padding-bottom: 3rem !important; }
+  #beranda h1 { font-size: clamp(2rem, 7vw, 2.8rem); line-height: 1.08; letter-spacing: -0.04em; }
+  #form-section { border-radius: 1.5rem; padding: 1rem; }
   .mobile-sticky-cta {
     display: block;
     bottom: calc(0.75rem + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
   .mobile-sticky-cta a {
     border: 1px solid rgba(245, 211, 141, 0.5);
     background: linear-gradient(135deg, #f5d38d 0%, #d4af37 48%, #b88a1c 100%);
@@ -291,60 +167,41 @@ section[id], div[id] {
     box-shadow: 0 18px 38px rgba(212, 175, 55, 0.28);
   }
 }
-
-/* Loading Animation */
-.loading-spinner {
-  border: 3px solid rgba(245, 158, 11, 0.3);
-  border-top: 3px solid #f59e0b;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 </style>
 </head>
 
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
 
-<!-- Header Navigation -->
+<!-- HEADER -->
 <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 shadow-2xl">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
     <a href="#beranda" class="flex items-center gap-3 group">
-      <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-        IP
-      </div>
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">IP</div>
       <div>
         <span class="text-lg font-black tracking-wider block text-white leading-none">INDOPROPERTI</span>
         <span class="text-[10px] text-amber-400 font-semibold tracking-widest uppercase">Komersial & Industri</span>
       </div>
     </a>
-    
+
     <nav class="hidden lg:flex items-center space-x-6 text-sm font-semibold">
-      <a href="#beranda" class="text-emerald-glow transition-all hover:text-emerald-300">Beranda</a>
-      <a href="#kategori" class="text-emerald-glow transition-all hover:text-emerald-300">Kategori</a>
-      <a href="#listing" class="text-emerald-glow transition-all hover:text-emerald-300">Listing Properti</a>
-      <a href="#keunggulan" class="text-emerald-glow transition-all hover:text-emerald-300">Mengapa Kami</a>
-      <a href="#form-section" class="text-emerald-glow transition-all hover:text-emerald-300">Form Pengajuan</a>
-      <a href="#kontak" class="text-emerald-glow transition-all hover:text-emerald-300">Kontak</a>
+      <a href="#beranda" class="text-emerald-glow transition-all">Beranda</a>
+      <a href="#kategori" class="text-emerald-glow transition-all">Kategori</a>
+      <a href="#listing" class="text-emerald-glow transition-all">Listing Properti</a>
+      <a href="#keunggulan" class="text-emerald-glow transition-all">Mengapa Kami</a>
+      <a href="#form-section" class="text-emerald-glow transition-all">Form Pengajuan</a>
+      <a href="#kontak" class="text-emerald-glow transition-all">Kontak</a>
     </nav>
-    
+
     <div class="flex items-center space-x-3">
-      <a href="#form-section" class="hidden sm:inline-flex px-4 py-2 text-xs md:text-sm font-bold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 transition-all shadow-lg shadow-amber-500/10 items-center gap-2">
-        <i class="fa-solid fa-paper-plane"></i>
-        <span>Jual / Cari Lahan</span>
+      <a href="#form-section" class="hidden sm:inline-flex px-4 py-2 text-xs md:text-sm font-bold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 transition-all shadow-lg items-center gap-2">
+        <i class="fa-solid fa-paper-plane"></i><span>Jual / Cari Lahan</span>
       </a>
-      <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-300 hover:text-white p-2" aria-label="Toggle Menu">
+      <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-300 hover:text-white p-2">
         <i class="fa-solid fa-bars text-xl"></i>
       </button>
     </div>
   </div>
-  
-  <!-- Mobile Menu -->
+
   <div id="mobile-menu" class="hidden lg:hidden bg-slate-900 border-b border-slate-800 px-5 py-4 space-y-3 font-semibold">
     <a href="#beranda" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm">Beranda</a>
     <a href="#kategori" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm">Kategori</a>
@@ -355,35 +212,30 @@ section[id], div[id] {
   </div>
 </header>
 
-<!-- Main Content -->
+<!-- MAIN -->
 <main class="flex-grow">
   <div class="space-y-20 pb-20 pt-4">
-    
-    <!-- Hero Section -->
+
+    <!-- HERO + FORM -->
     <section id="beranda" class="relative bg-slate-950 text-white overflow-hidden pt-8 pb-20 lg:pt-16 lg:pb-28 border-b border-slate-800/50">
       <div class="absolute inset-0 bg-grid-pattern opacity-20"></div>
       <div class="absolute top-1/4 -right-20 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute bottom-1/4 -left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
-      
+
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="grid lg:grid-cols-12 gap-12 items-start">
-          <!-- Left Content -->
+
+          <!-- LEFT -->
           <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-certificate"></i> Broker Spesialis Komersial & Industri
             </div>
-            
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              <span class="text-rainbow-animated">
-                Mitra Terpercaya Jual Beli Pabrik, Gudang & Lahan Industri dan Properti Lainnya
-              </span>
+              <span class="text-rainbow-animated">Mitra Terpercaya Jual Beli Pabrik, Gudang & Lahan Industri dan Properti Lainnya</span>
             </h1>
-            
             <p class="text-slate-400 text-sm sm:text-base lg:text-lg max-w-2xl leading-relaxed">
               Solusi profesional bagi investor, pengembang, dan manufaktur. Menjamin proses akuisisi & penjualan aset komersial yang transparan dengan keabsahan legalitas 100% terverifikasi.
             </p>
-            
-            <!-- Stats -->
             <div class="grid grid-cols-3 gap-4 pt-4 max-w-xl mx-auto lg:mx-0">
               <div class="glass-panel p-4 rounded-2xl text-center lg:text-left border border-slate-800">
                 <div class="text-2xl sm:text-3xl font-black text-amber-400">500+ <span class="text-xs font-medium text-slate-400">Ha</span></div>
@@ -399,9 +251,9 @@ section[id], div[id] {
               </div>
             </div>
           </div>
-          
-          <!-- Google Form Section -->
-          <div id="form-section" class="lg:col-span-5 bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+
+          <!-- FORM -->
+          <div id="form-section" class="lg:col-span-5 bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200">
             <div class="mb-5 border-b pb-4 border-slate-100">
               <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">Layanan Responsif</span>
               <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
@@ -410,28 +262,68 @@ section[id], div[id] {
               </h2>
               <p class="text-xs text-slate-500 mt-1">Isi formulir di bawah ini. Info properti akan ditampilkan di katalog publik; nama dan nomor WhatsApp Anda tetap privat.</p>
             </div>
-            
-            <!-- Google Form Iframe -->
-            <div class="form-container">
-              <iframe 
-                src="https://docs.google.com/forms/d/e/1FAIpQLSeMvYjqLTj97cq7Lb8hAo5E84jE6vuUUeEqgm47_1MKPY37hw/viewform?embedded=true" 
-                width="100%" 
-                height="1300"
-                frameborder="0" 
-                marginheight="0" 
-                marginwidth="0"
-                scrolling="yes"
-                loading="lazy"
-                title="Form Pengajuan Properti IndoProperti">
-                Memuat formulir...
-              </iframe>
-            </div>
-            
-            <!-- Info Box -->
+
+            <form id="propertyForm" onsubmit="handleSubmit(event)" class="space-y-4">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Pengajuan <span class="text-red-500">*</span></label>
+                  <select id="jenis" required class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
+                    <option value="Titip Jual Properti">Titip Jual Properti</option>
+                    <option value="Cari / Request Properti">Cari / Request Properti</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Properti <span class="text-red-500">*</span></label>
+                  <select id="kategori" required class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
+                    <option value="Lahan Industri">Lahan Industri</option>
+                    <option value="Bangunan Pabrik">Bangunan Pabrik</option>
+                    <option value="Gudang Logistik">Gudang Logistik</option>
+                    <option value="Ruko / Komersial">Ruko / Komersial</option>
+                    <option value="Lahan Lainnya">Lahan Lainnya</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                <input type="text" id="nama" required placeholder="Contoh: Bpk. H. Ahmad" class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                <input type="tel" id="whatsapp" required placeholder="082126526162" class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Lokasi Properti <span class="text-red-500">*</span></label>
+                  <input type="text" id="lokasi" required placeholder="Paseh, Karawang, Cikande..." class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Budget / Harga</label>
+                  <input type="text" id="harga" placeholder="Misal: 10 Miliar" class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Luas Tanah / Bangunan</label>
+                <input type="text" id="luas" placeholder="Misal: LT 10.000m² / LB 5.000m²" class="w-full text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Deskripsi / Catatan</label>
+                <textarea id="deskripsi" rows="3" placeholder="Ketentuan zonasi, akses jalan, daya listrik..." class="w-full text-xs sm:text-sm px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-slate-50"></textarea>
+              </div>
+
+              <button type="submit" id="submitBtn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold text-sm rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan
+              </button>
+            </form>
+
             <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
               <p class="text-[11px] text-emerald-700 flex items-start gap-2">
                 <i class="fa-solid fa-circle-check mt-0.5"></i>
-                <span>Data Anda akan otomatis tersimpan ke <a href="https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="underline font-bold">Google Spreadsheet</a> dan kami akan segera menghubungi Anda melalui WhatsApp.</span>
+                <span>Data Anda akan otomatis tersimpan dan kami akan segera menghubungi Anda melalui WhatsApp.</span>
               </p>
             </div>
           </div>
@@ -439,57 +331,44 @@ section[id], div[id] {
       </div>
     </section>
 
-    <!-- Kategori Section -->
+    <!-- KATEGORI -->
     <section id="kategori" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-2xl mx-auto mb-12">
         <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block mb-1">Aset Komersial</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Spesialisasi Kategori Properti</h2>
         <p class="text-slate-400 text-xs sm:text-sm mt-2">Menyediakan berbagai pilihan aset industri dengan spesifikasi standar operasional manufaktur.</p>
       </div>
-      
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="glass-panel p-6 rounded-2xl hover:border-amber-500/50 transition-all group">
-          <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors">
-            <i class="fa-solid fa-vector-square"></i>
-          </div>
+          <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors"><i class="fa-solid fa-vector-square"></i></div>
           <h3 class="text-lg font-bold text-white mb-1">Lahan Industri</h3>
           <p class="text-xs text-slate-400 leading-relaxed">Tanah matang skala besar dalam kawasan industri (zona merah/kuning) siap bangun.</p>
         </div>
-        
         <div class="glass-panel p-6 rounded-2xl hover:border-amber-500/50 transition-all group">
-          <div class="w-12 h-12 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-blue-500 group-hover:text-slate-950 transition-colors">
-            <i class="fa-solid fa-industry"></i>
-          </div>
+          <div class="w-12 h-12 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-blue-500 group-hover:text-slate-950 transition-colors"><i class="fa-solid fa-industry"></i></div>
           <h3 class="text-lg font-bold text-white mb-1">Bangunan Pabrik</h3>
           <p class="text-xs text-slate-400 leading-relaxed">Pabrik siap pakai dengan daya listrik kVA besar, PBG/IMB Industri, dan izin operasional.</p>
         </div>
-        
         <div class="glass-panel p-6 rounded-2xl hover:border-amber-500/50 transition-all group">
-          <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-500 group-hover:text-slate-950 transition-colors">
-            <i class="fa-solid fa-warehouse"></i>
-          </div>
+          <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-500 group-hover:text-slate-950 transition-colors"><i class="fa-solid fa-warehouse"></i></div>
           <h3 class="text-lg font-bold text-white mb-1">Pergudangan Logistik</h3>
           <p class="text-xs text-slate-400 leading-relaxed">Gudang modern, ceiling tinggi, loading dock, akses trailer & kontainer 40ft.</p>
         </div>
-        
         <div class="glass-panel p-6 rounded-2xl hover:border-amber-500/50 transition-all group">
-          <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-purple-500 group-hover:text-slate-950 transition-colors">
-            <i class="fa-solid fa-building-user"></i>
-          </div>
+          <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-purple-500 group-hover:text-slate-950 transition-colors"><i class="fa-solid fa-building-user"></i></div>
           <h3 class="text-lg font-bold text-white mb-1">Ruko & Komersial</h3>
           <p class="text-xs text-slate-400 leading-relaxed">Gedung perkantoran, ruko strategis pusat kota, showroom, dan lokasi usaha komersial.</p>
         </div>
       </div>
     </section>
 
-    <!-- Listing Section -->
+    <!-- LISTING -->
     <section id="listing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-2xl mx-auto mb-12">
         <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block mb-1">Katalog Pilihan</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Listing Properti Industri Unggulan</h2>
         <p class="text-slate-400 text-xs sm:text-sm mt-2">Hubungi kami untuk informasi listing properti terbaru.</p>
       </div>
-      
       <div class="text-center py-12 glass-panel rounded-3xl">
         <i class="fa-solid fa-building-circle-check text-5xl text-amber-400 mb-4 block"></i>
         <h3 class="text-xl font-bold text-white mb-2">Listing Properti Tersedia</h3>
@@ -500,39 +379,30 @@ section[id], div[id] {
       </div>
     </section>
 
-    <!-- Keunggulan Section -->
+    <!-- KEUNGGULAN + KONTAK -->
     <section id="keunggulan" class="bg-slate-900/60 border-y border-slate-800 py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <div class="space-y-6">
             <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block">Standar Layanan</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Keunggulan Bertransaksi Melalui IndoProperti</h2>
-            
             <div class="space-y-4 pt-2">
               <div class="flex gap-4">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0">
-                  <i class="fa-solid fa-shield-halved"></i>
-                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
                 <div>
                   <h4 class="font-bold text-white text-base">Verifikasi Legalitas & Zonasi</h4>
                   <p class="text-xs text-slate-400 mt-1 leading-relaxed">Penguji keabsahan Sertifikat (SHM/SHGB), Keterangan Rencana Kota (ITRK/Zonasi Industri), serta kelengkapan PBG/IMB.</p>
                 </div>
               </div>
-              
               <div class="flex gap-4">
-                <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0">
-                  <i class="fa-solid fa-users-gear"></i>
-                </div>
+                <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-users-gear"></i></div>
                 <div>
                   <h4 class="font-bold text-white text-base">Jaringan Direct Buyer & Investor</h4>
                   <p class="text-xs text-slate-400 mt-1 leading-relaxed">Akses cepat langsung ke jaringan buyer investor PMA/PMDN, grup manufaktur, serta pengembang kawasan industri.</p>
                 </div>
               </div>
-              
               <div class="flex gap-4">
-                <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0">
-                  <i class="fa-solid fa-handshake"></i>
-                </div>
+                <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-handshake"></i></div>
                 <div>
                   <h4 class="font-bold text-white text-base">Pendampingan Transaksi PPAT</h4>
                   <p class="text-xs text-slate-400 mt-1 leading-relaxed">Memandu seluruh alur negosiasi, syarat uji kelayakan (due diligence), hingga proses penandatanganan di Notaris/PPAT.</p>
@@ -540,13 +410,11 @@ section[id], div[id] {
               </div>
             </div>
           </div>
-          
-          <!-- Kontak Section -->
+
           <div id="kontak" class="glass-panel p-8 rounded-3xl border border-slate-800 space-y-6">
             <h3 class="text-xl font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
               <i class="fa-solid fa-location-dot text-amber-400"></i> Kontak Kantor Operasional
             </h3>
-            
             <div class="space-y-4 text-xs sm:text-sm text-slate-300">
               <div class="flex items-start gap-3">
                 <i class="fa-solid fa-building text-amber-400 text-lg mt-0.5"></i>
@@ -555,7 +423,6 @@ section[id], div[id] {
                   Desa Cigentur, Kec. Paseh, Kab. Bandung 40383, Jawa Barat.
                 </div>
               </div>
-              
               <div class="flex items-center gap-3">
                 <i class="fa-solid fa-phone-volume text-amber-400 text-lg"></i>
                 <div>
@@ -563,7 +430,6 @@ section[id], div[id] {
                   <a href="https://wa.me/6282126526162" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:underline">+62 821-2652-6162</a>
                 </div>
               </div>
-              
               <div class="flex items-center gap-3">
                 <i class="fa-solid fa-envelope text-amber-400 text-lg"></i>
                 <div>
@@ -571,16 +437,7 @@ section[id], div[id] {
                   <a href="mailto:info@indoproperti-industri.com" class="text-amber-400 hover:underline">info@indoproperti-industri.com</a>
                 </div>
               </div>
-              
-              <div class="flex items-center gap-3">
-                <i class="fa-solid fa-table text-amber-400 text-lg"></i>
-                <div>
-                  <strong class="block text-white">Lihat Hasil Respons:</strong>
-                  <a href="https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:underline">Google Spreadsheet</a>
-                </div>
-              </div>
             </div>
-            
             <div class="pt-4 border-t border-slate-800">
               <a href="https://wa.me/6282126526162?text=Halo%20IndoProperti,%20saya%20ingin%20konsultasi%20mengenai%20properti%20industri." target="_blank" rel="noopener noreferrer" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
                 <i class="fa-brands fa-whatsapp text-lg"></i> Konsultasi Cepat via WhatsApp
@@ -590,29 +447,25 @@ section[id], div[id] {
         </div>
       </div>
     </section>
-    
+
   </div>
 </main>
 
-<!-- Mobile Sticky CTA -->
+<!-- MOBILE STICKY CTA -->
 <div class="mobile-sticky-cta">
   <a href="#form-section" class="py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs rounded-2xl shadow-xl">
     <i class="fa-solid fa-paper-plane"></i> Jual / Cari Lahan
   </a>
 </div>
 
-<!-- Footer -->
+<!-- FOOTER -->
 <footer class="bg-slate-950 text-slate-400 py-10 border-t border-slate-800 text-xs">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 text-center">
     <div class="flex justify-center items-center gap-2 text-white font-black text-base">
       <div class="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center text-xs">IP</div>
       INDOPROPERTI Komersial & Industri
     </div>
-    
-    <p class="max-w-xl mx-auto text-slate-400 leading-relaxed">
-      Platform Broker Perantara Jual Beli Pabrik, Pergudangan Logistik, dan Lahan Industri Terverifikasi.
-    </p>
-    
+    <p class="max-w-xl mx-auto text-slate-400 leading-relaxed">Platform Broker Perantara Jual Beli Pabrik, Pergudangan Logistik, dan Lahan Industri Terverifikasi.</p>
     <div class="flex justify-center gap-4 pt-2">
       <a href="https://wa.me/6282126526162" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-emerald-400 transition-colors" aria-label="WhatsApp">
         <i class="fa-brands fa-whatsapp text-2xl"></i>
@@ -620,89 +473,124 @@ section[id], div[id] {
       <a href="mailto:info@indoproperti-industri.com" class="text-slate-400 hover:text-amber-400 transition-colors" aria-label="Email">
         <i class="fa-solid fa-envelope text-2xl"></i>
       </a>
-      <a href="https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-blue-400 transition-colors" aria-label="Spreadsheet">
-        <i class="fa-solid fa-table text-2xl"></i>
-      </a>
     </div>
-    
     <div class="text-[11px] pt-4 border-t border-slate-900">
-      <span class="footer-glow font-black tracking-wide">
-        © 2026 IndoProperti Komersial & Industri @Nurdin Hidayatulloh el-ghifari. Hak Cipta Dilindungi.
-      </span>
+      <span class="footer-glow font-black tracking-wide">© 2026 IndoProperti Komersial & Industri @Nurdin Hidayatulloh el-ghifari. Hak Cipta Dilindungi.</span>
     </div>
   </div>
 </footer>
 
-<!-- JavaScript -->
 <script>
-// Toggle Mobile Menu
+// URL Apps Script - hanya berjalan di backend, tidak tampil di website
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsLHcyrPVOFTASDnKTe660fof97PO6-Kecr_gZIlSws5LtI-E6LitzA_ljNEf7dHkC/exec';
+
 function toggleMobileMenu() {
   const menu = document.getElementById('mobile-menu');
-  if (menu) {
-    menu.classList.toggle('hidden');
+  if (menu) menu.classList.toggle('hidden');
+}
+
+async function handleSubmit(event) {
+  event.preventDefault();
+  const submitBtn = document.getElementById('submitBtn');
+  const originalHTML = submitBtn.innerHTML;
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+
+  const formData = {
+    jenis: document.getElementById('jenis').value,
+    kategori: document.getElementById('kategori').value,
+    nama: document.getElementById('nama').value,
+    whatsapp: document.getElementById('whatsapp').value,
+    lokasi: document.getElementById('lokasi').value,
+    harga: document.getElementById('harga').value || '-',
+    luas: document.getElementById('luas').value || '-',
+    deskripsi: document.getElementById('deskripsi').value || '-'
+  };
+
+  const waMessage =
+`*PENGAJUAN PROPERTI INDOPROPERTI*
+
+📋 *Jenis:* ${formData.jenis}
+🏢 *Kategori:* ${formData.kategori}
+👤 *Nama:* ${formData.nama}
+📱 *WhatsApp:* ${formData.whatsapp}
+📍 *Lokasi:* ${formData.lokasi}
+💰 *Harga/Budget:* ${formData.harga}
+📏 *Luas:* ${formData.luas}
+📝 *Deskripsi:*
+${formData.deskripsi}
+
+---
+_Terima kasih telah menggunakan layanan IndoProperti!_`;
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    document.getElementById('propertyForm').reset();
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalHTML;
+    window.open(`https://wa.me/6282126526162?text=${encodeURIComponent(waMessage)}`, '_blank');
+    showNotification('✅ Pengajuan berhasil dikirim! Kami akan segera menghubungi Anda.', 'success');
+
+  } catch (error) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalHTML;
+    window.open(`https://wa.me/6282126526162?text=${encodeURIComponent(waMessage)}`, '_blank');
+    showNotification('✅ Pengajuan berhasil dikirim via WhatsApp!', 'success');
   }
 }
 
-// Initialize on DOM Load
-document.addEventListener('DOMContentLoaded', function() {
-  // Close mobile menu when clicking on a link
-  const mobileLinks = document.querySelectorAll('#mobile-menu a');
-  mobileLinks.forEach(link => {
-    link.addEventListener('click', function() {
-      toggleMobileMenu();
-    });
+function showNotification(message, type) {
+  const existing = document.getElementById('notification');
+  if (existing) existing.remove();
+  const colors = {
+    success: 'bg-emerald-600 text-white',
+    warning: 'bg-amber-500 text-slate-950',
+    error: 'bg-red-600 text-white'
+  };
+  const notif = document.createElement('div');
+  notif.id = 'notification';
+  notif.className = `fixed top-24 right-4 z-50 px-5 py-3 rounded-2xl shadow-2xl text-sm font-bold max-w-sm ${colors[type] || colors.success}`;
+  notif.innerHTML = message;
+  document.body.appendChild(notif);
+  setTimeout(() => {
+    notif.style.opacity = '0';
+    notif.style.transition = 'opacity 0.5s';
+    setTimeout(() => notif.remove(), 500);
+  }, 4000);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('#mobile-menu a').forEach(link => {
+    link.addEventListener('click', toggleMobileMenu);
   });
-  
-  // Reveal animation on scroll
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
+      if (entry.isIntersecting) entry.target.classList.add('visible');
     });
-  }, { 
-    threshold: 0.12,
-    rootMargin: '0px 0px -50px 0px'
-  });
-  
-  // Observe all sections and glass panels
+  }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+
   document.querySelectorAll('section, .glass-panel').forEach(el => {
     el.classList.add('reveal');
     observer.observe(el);
   });
-  
-  // Smooth scroll for anchor links
+
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
       if (href !== '#' && href !== '') {
         e.preventDefault();
         const target = document.querySelector(href);
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   });
-  
-  // Log form integration status
-  console.log('✅ IndoProperti Website Loaded');
-  console.log('📋 Google Form: Integrated');
-  console.log('📊 Spreadsheet: https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit');
-  console.log('🔗 Apps Script ID: AKfycbyTrtDD5PiXdiEOmtIaAW_Mn4jCeEqwL9nbRnO1WAr9LtEpVv9jyjBDPSLLJc96yO4h');
-});
-
-// Handle iframe load
-window.addEventListener('load', function() {
-  const iframe = document.querySelector('.form-container iframe');
-  if (iframe) {
-    iframe.addEventListener('load', function() {
-      console.log('✅ Google Form loaded successfully');
-    });
-  }
 });
 </script>
 
