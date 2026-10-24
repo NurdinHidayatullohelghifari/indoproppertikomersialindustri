@@ -1221,9 +1221,15 @@ label[for="pub-files"], label[for="l-files"] {
                     <textarea id="l-desc" rows="2" placeholder="Spesifikasi kelistrikan kVA, zonasi merah, akses jalan..." class="w-full text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white"></textarea>
                 </div>
 
-                <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl mt-2">
-                    Terbitkan Listing Properti
-                </button>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                    <button type="submit" onclick="document.getElementById('add-listing-modal').dataset.publishAfterSave='false'" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-lg">
+                        <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Data & Foto
+                    </button>
+                    <button type="submit" onclick="document.getElementById('add-listing-modal').dataset.publishAfterSave='true'" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-lg">
+                        <i class="fa-solid fa-globe mr-1"></i> Simpan & Posting ke Website
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-400 leading-relaxed">Gunakan “Simpan Data & Foto” untuk menyimpan revisi. Pilih “Simpan & Posting ke Website” agar katalog dibuka dan listing ditampilkan.</p>
             </form>
         </div>
     </div>
@@ -1363,7 +1369,7 @@ label[for="pub-files"], label[for="l-files"] {
         const IS_PUBLIC_HOSTED = /\.github\.io$/i.test(window.location.hostname);
         const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFtP6zllMGvPkV_90Q8y4EeRBPydr3QSeaIsNxjmjUpGTSJxa6TngZh5sOI1YhdhYB/exec';
         const GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY = 'indoproperti_google_apps_script_url';
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/15EO9psGiL7jvc09Iw5hJKIj7Krylc215HWWnCGfQx94/edit';
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit?usp=sharing';
 
         function getGoogleAppsScriptUrl() {
             const stored = localStorage.getItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY);
@@ -2237,8 +2243,8 @@ label[for="pub-files"], label[for="l-files"] {
                         <button onclick="openEditListingModal('${item.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-blue-600/15 border border-blue-500/30 text-blue-300 hover:bg-blue-600 hover:text-white transition-colors font-bold" title="Revisi data, harga, lokasi, deskripsi, dan foto">
                             <i class="fa-solid fa-pen-to-square"></i><span>Edit data/foto</span>
                         </button>
-                        <button onclick="publishListingToWebsite('${item.id}')" class="p-2 text-slate-400 hover:text-emerald-400 transition-colors" title="Tampilkan listing di halaman website">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <button onclick="publishListingToWebsite('${item.id}')" class="inline-flex items-center gap-1.5 px-3 py-2 ml-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold shadow-md whitespace-nowrap" title="Tampilkan listing di halaman website">
+                            <i class="fa-solid fa-globe"></i><span>Posting ke Website</span>
                         </button>
                         <button onclick="deleteListing('${item.id}')" class="p-2 text-slate-400 hover:text-red-400 transition-colors" title="Hapus Listing">
                             <i class="fa-solid fa-trash"></i>
@@ -2247,7 +2253,7 @@ label[for="pub-files"], label[for="l-files"] {
                 </tr>
             `).join('') || `
                 <tr>
-                    <td colspan="7" class="p-8 text-center text-slate-500">
+                    <td colspan="8" class="p-8 text-center text-slate-500">
                         <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
                         Belum ada listing yang tersedia.
                     </td>
@@ -2715,6 +2721,7 @@ label[for="pub-files"], label[for="l-files"] {
             const titleEl = modal.querySelector('h3');
             if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-plus-circle text-amber-400"></i> Tambah Listing Properti Baru';
             modal.dataset.mode = 'create';
+            modal.dataset.publishAfterSave = 'false';
             delete modal.dataset.editId;
             const form = modal.querySelector('form');
             if (form) form.reset();
@@ -2732,6 +2739,7 @@ label[for="pub-files"], label[for="l-files"] {
             const titleEl = modal.querySelector('h3');
             if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square text-blue-400"></i> Edit Data & Foto Properti';
             modal.dataset.mode = 'edit';
+            modal.dataset.publishAfterSave = 'false';
             modal.dataset.editId = id;
 
             document.getElementById('l-title').value = item.title || '';
@@ -2798,8 +2806,11 @@ label[for="pub-files"], label[for="l-files"] {
                     listings.unshift(newListing);
                 }
                 saveListings();
+                const savedId = newListing.id;
+                const shouldPublish = modal.dataset.publishAfterSave === 'true';
                 closeAddListingModal();
-                showToast(isEditing ? 'Listing properti berhasil diperbarui.' : 'Listing properti baru berhasil diterbitkan.', 'success');
+                showToast(isEditing ? 'Listing properti berhasil diperbarui dan disimpan.' : 'Listing properti baru berhasil disimpan.', 'success');
+                if (shouldPublish) publishListingToWebsite(savedId);
                 return;
             }
 
@@ -2817,8 +2828,11 @@ label[for="pub-files"], label[for="l-files"] {
             }
 
             saveListings();
+            const savedId = newListing.id;
+            const shouldPublish = modal.dataset.publishAfterSave === 'true';
             closeAddListingModal();
-            showDriveSyncToast(syncResult, isEditing ? 'Listing properti berhasil diperbarui.' : 'Listing properti baru berhasil diterbitkan.');
+            showDriveSyncToast(syncResult, isEditing ? 'Listing properti berhasil diperbarui dan disimpan.' : 'Listing properti baru berhasil disimpan.');
+            if (shouldPublish) publishListingToWebsite(savedId);
         }
 
         async function deleteListing(id) {
