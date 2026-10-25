@@ -421,6 +421,8 @@
     </style>
 
     <style id="indoproperti-layout-fixes">
+      /* Hilangkan tombol ajakan mengambang agar tidak menutupi tombol kirim formulir. */
+      .mobile-sticky-cta { display: none !important; }
       html { scroll-behavior: smooth; }
       body { overflow-x: hidden; }
       img, video, iframe { max-width: 100%; }
@@ -1233,12 +1235,6 @@
         <span id="toast-msg" class="text-xs font-medium">Notifikasi Sistem</span>
     </div>
 
-    <div class="mobile-sticky-cta">
-        <a href="#form-section" class="py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs rounded-2xl shadow-xl">
-            <i class="fa-solid fa-paper-plane"></i> Jual / Cari Lahan
-        </a>
-    </div>
-
     <footer class="bg-slate-950 text-slate-400 py-10 border-t border-slate-800 text-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 text-center">
             <div class="flex justify-center items-center gap-2 text-white font-black text-base">
@@ -1342,13 +1338,18 @@
 
         const IS_LOCAL_FILE = window.location.protocol === 'file:';
         const IS_PUBLIC_HOSTED = /\.github\.io$/i.test(window.location.hostname);
-        const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFtP6zllMGvPkV_90Q8y4EeRBPydr3QSeaIsNxjmjUpGTSJxa6TngZh5sOI1YhdhYB/exec';
+        const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCTjqUd4-dlMVhzGsSJ_n5cojXgl3GjSSlP4Hh96YBac1vbsXirHL3HCbB9W35LVbL/exec';
         const GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY = 'indoproperti_google_apps_script_url';
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit?gid=0#gid=0';
-        const GOOGLE_SHEET_ID = '1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M';
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1_2kNFj-v88zzCNiJ8pAtz72VaT26PAuU/edit?usp=sharing';
+        const GOOGLE_SHEET_ID = '1_2kNFj-v88zzCNiJ8pAtz72VaT26PAuU';
 
         function getGoogleAppsScriptUrl() {
             const stored = localStorage.getItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY);
+            // Migrasi otomatis URL deployment lama yang pernah disimpan di browser admin.
+            if (stored && stored.trim() === 'https://script.google.com/macros/s/AKfycbxFtP6zllMGvPkV_90Q8y4EeRBPydr3QSeaIsNxjmjUpGTSJxa6TngZh5sOI1YhdhYB/exec') {
+                localStorage.setItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY, DEFAULT_GOOGLE_APPS_SCRIPT_URL);
+                return DEFAULT_GOOGLE_APPS_SCRIPT_URL;
+            }
             return (stored && stored.trim()) ? stored.trim() : DEFAULT_GOOGLE_APPS_SCRIPT_URL;
         }
 
