@@ -1343,17 +1343,20 @@
 
         const IS_LOCAL_FILE = window.location.protocol === 'file:';
         const IS_PUBLIC_HOSTED = /\.github\.io$/i.test(window.location.hostname);
-        const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCTjqUd4-dlMVhzGsSJ_n5cojXgl3GjSSlP4Hh96YBac1vbsXirHL3HCbB9W35LVbL/exec';
+        const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOmKTpODxl6MjXhMh8o9T3AZALP07xn_6yuta7yNr16CQsog2seX8YplLKri5cc2vQ/exec';
         const GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY = 'indoproperti_google_apps_script_url';
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1_2kNFj-v88zzCNiJ8pAtz72VaT26PAuU/edit?usp=sharing';
-        const GOOGLE_SHEET_ID = '1_2kNFj-v88zzCNiJ8pAtz72VaT26PAuU';
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1ONdzYzsd477Am8R8CWI3xB6tP6ohOyK4fALDbHcL1U0/edit?usp=drive_link';
+        const GOOGLE_SHEET_ID = '1ONdzYzsd477Am8R8CWI3xB6tP6ohOyK4fALDbHcL1U0';
 
         function getGoogleAppsScriptUrl() {
             const stored = localStorage.getItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY);
-            // Migrasi otomatis URL deployment lama yang pernah disimpan di browser admin.
-            if (stored && stored.trim() === 'https://script.google.com/macros/s/AKfycbxFtP6zllMGvPkV_90Q8y4EeRBPydr3QSeaIsNxjmjUpGTSJxa6TngZh5sOI1YhdhYB/exec') {
-                localStorage.setItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY, DEFAULT_GOOGLE_APPS_SCRIPT_URL);
-                return DEFAULT_GOOGLE_APPS_SCRIPT_URL;
+            const invalidDeployments = [
+                'https://script.google.com/macros/s/AKfycbxFtP6zllMGvPkV_90Q8y4EeRBPydr3QSeaIsNxjmjUpGTSJxa6TngZh5sOI1YhdhYB/exec',
+                'https://script.google.com/macros/s/AKfycbzCTjqUd4-dlMVhzGsSJ_n5cojXgl3GjSSlP4Hh96YBac1vbsXirHL3HCbB9W35LVbL/exec'
+            ];
+            if (stored && invalidDeployments.includes(stored.trim())) {
+                localStorage.removeItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY);
+                return '';
             }
             return (stored && stored.trim()) ? stored.trim() : DEFAULT_GOOGLE_APPS_SCRIPT_URL;
         }
@@ -1767,7 +1770,7 @@
                 // Jangan menahan pengiriman formulir dengan pemeriksaan GET terlebih dahulu.
                 // Pada hosting publik, GET/JSONP yang lambat atau format respons yang berbeda
                 // sebelumnya bisa menghentikan alur sebelum POST pengajuan terkirim.
-                const clientRequestId = `REQ-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+                const clientRequestId = createClientRequestId();
                 const body = JSON.stringify({
                     source: 'indoproperti',
                     spreadsheetId: GOOGLE_SHEET_ID,
@@ -1833,6 +1836,19 @@
 
         function createUniqueId(prefix) {
             return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+        }
+
+        function createClientRequestId() {
+            const randomBytes = new Uint8Array(16);
+            if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+                window.crypto.getRandomValues(randomBytes);
+            } else {
+                for (let i = 0; i < randomBytes.length; i++) {
+                    randomBytes[i] = Math.floor(Math.random() * 256);
+                }
+            }
+            const randomHex = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+            return `REQ-${Date.now()}-${randomHex}`;
         }
 
         // Tangkap error JavaScript yang sebelumnya hanya muncul di Console.
