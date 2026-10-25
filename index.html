@@ -1355,8 +1355,8 @@
                 'https://script.google.com/macros/s/AKfycbzCTjqUd4-dlMVhzGsSJ_n5cojXgl3GjSSlP4Hh96YBac1vbsXirHL3HCbB9W35LVbL/exec'
             ];
             if (stored && invalidDeployments.includes(stored.trim())) {
-                localStorage.removeItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY);
-                return '';
+                localStorage.setItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY, DEFAULT_GOOGLE_APPS_SCRIPT_URL);
+                return DEFAULT_GOOGLE_APPS_SCRIPT_URL;
             }
             return (stored && stored.trim()) ? stored.trim() : DEFAULT_GOOGLE_APPS_SCRIPT_URL;
         }
