@@ -547,7 +547,7 @@
                                     <i class="fa-solid fa-clipboard-list text-amber-500"></i>
                                     Form Titip Jual / Cari Lahan
                                 </h2>
-                                <p class="text-xs text-slate-500 mt-1">Isi formulir di bawah ini. Info properti akan ditampilkan di katalog publik; nama dan nomor WhatsApp Anda tetap privat.</p>
+                                <p class="text-xs text-slate-500 mt-1">Isi formulir di bawah ini. Admin akan meninjau pengajuan; informasi properti hanya tampil di katalog setelah diterbitkan. Nama dan nomor WhatsApp tetap privat.</p>
                             </div>
 
                             <form id="public-submission-form" onsubmit="handlePublicSubmit(event)" class="space-y-3.5">
@@ -797,11 +797,6 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-                        <div class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/80 px-2 py-1.5">
-                            <i class="fa-solid fa-link text-amber-400 text-[10px]"></i>
-                            <input id="drive-script-url-input" type="text" placeholder="https://script.google.com/..." class="w-52 bg-transparent text-[10px] text-slate-200 placeholder:text-slate-500 outline-none">
-                            <button onclick="saveGoogleScriptUrlConfig()" class="px-2 py-1.5 text-[10px] font-bold rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950">Simpan URL</button>
-                        </div>
                         <div id="system-mode-badge" class="px-3 py-2 text-[10px] font-bold rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 hidden"></div>
                         <button onclick="openAddListingModal()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 transition-all flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-plus"></i> Tambah Listing Baru
@@ -816,7 +811,7 @@
                             <i class="fa-solid fa-download"></i> Backup JSON
                         </button>
                         <button onclick="triggerBackupImport()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-sky-600 hover:bg-sky-500 text-white transition-all flex items-center gap-1.5 shadow-md">
-                            <i class="fa-solid fa-upload"></i> Restore JSON
+                            <i class="fa-solid fa-upload"></i> Impor Backup / CSV
                         </button>
                         <button onclick="exportToCSV()" class="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-violet-600 hover:bg-violet-500 text-white transition-all flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-file-csv"></i> Ekspor CSV
@@ -829,7 +824,7 @@
                         </button>
                     </div>
                 </div>
-                <input id="backup-import-input" type="file" accept="application/json,.json" class="hidden" onchange="importBackupJson(event)">
+                <input id="backup-import-input" type="file" accept="application/json,.json,text/csv,.csv" class="hidden" onchange="importBackupJson(event)">
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="glass-panel p-5 rounded-2xl border border-slate-800">
@@ -1303,36 +1298,7 @@
             }
         ];
 
-        const INITIAL_SUBMISSIONS = [
-            {
-                id: 'IP-101',
-                timestamp: '2026-10-07 14:20',
-                type: 'Titip Jual Properti',
-                category: 'Bangunan Pabrik',
-                name: 'H. Suryana',
-                phone: '081234567890',
-                location: 'Paseh, Bandung',
-                price: '25 Miliar',
-                area: 'LT 12.000m² / LB 6.000m²',
-                notes: 'Pabrik tekstil aktif, sertifikat SHM, PLN 550 kVA.',
-                status: 'Baru',
-                isPosted: false
-            },
-            {
-                id: 'IP-102',
-                timestamp: '2026-10-06 09:15',
-                type: 'Cari / Request Properti',
-                category: 'Lahan Industri',
-                name: 'PT. Asia Logistics',
-                phone: '082126526162',
-                location: 'Cikande / Karawang',
-                price: '15 Miliar',
-                area: 'LT 20.000m²',
-                notes: 'Butuh lahan industri zona merah siap bangun.',
-                status: 'Di-Follow Up',
-                isPosted: false
-            }
-        ];
+        const INITIAL_SUBMISSIONS = [];
 
         let listings = [];
         let submissions = [];
@@ -1343,6 +1309,12 @@
 
         const IS_LOCAL_FILE = window.location.protocol === 'file:';
         const IS_PUBLIC_HOSTED = /\.github\.io$/i.test(window.location.hostname);
+        const SUPABASE_URL = 'https://szphehxtozhoeoukeenh.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_CfdgzfzndkzmH8LpOpTWYw_HDz50obb';
+        const SUPABASE_ADMIN_EMAIL = 'indoproperti2026@gmail.com';
+        const SUPABASE_SESSION_KEY = 'indoproperti_supabase_session';
+        const isSupabaseConfigured = () => Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
+        const isSupabaseSyncEnabled = () => isSupabaseConfigured() && !IS_LOCAL_FILE;
         const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOmKTpODxl6MjXhMh8o9T3AZALP07xn_6yuta7yNr16CQsog2seX8YplLKri5cc2vQ/exec';
         const GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY = 'indoproperti_google_apps_script_url';
         const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1ONdzYzsd477Am8R8CWI3xB6tP6ohOyK4fALDbHcL1U0/edit?usp=drive_link';
@@ -1361,7 +1333,181 @@
             return (stored && stored.trim()) ? stored.trim() : DEFAULT_GOOGLE_APPS_SCRIPT_URL;
         }
 
-        const isGoogleSyncEnabled = () => !!getGoogleAppsScriptUrl() && !IS_LOCAL_FILE;
+        const isGoogleSyncEnabled = () => isSupabaseSyncEnabled();
+
+        function getSupabaseSession() {
+            try {
+                const session = JSON.parse(localStorage.getItem(SUPABASE_SESSION_KEY) || 'null');
+                return session && session.access_token ? session : null;
+            } catch (error) {
+                console.error('Sesi admin Supabase tidak dapat dibaca:', error);
+                return null;
+            }
+        }
+
+        function saveSupabaseSession(session) {
+            localStorage.setItem(SUPABASE_SESSION_KEY, JSON.stringify(session));
+        }
+
+        async function refreshSupabaseSession() {
+            const session = getSupabaseSession();
+            if (!session || !session.refresh_token) return null;
+            const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+                method: 'POST',
+                headers: { apikey: SUPABASE_PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh_token: session.refresh_token })
+            });
+            if (!response.ok) {
+                localStorage.removeItem(SUPABASE_SESSION_KEY);
+                throw new Error('Sesi admin berakhir. Silakan login kembali.');
+            }
+            const refreshed = await response.json();
+            saveSupabaseSession(refreshed);
+            return refreshed;
+        }
+
+        async function supabaseRequest(path, options = {}, retry = true) {
+            const session = options.admin ? getSupabaseSession() : null;
+            const headers = {
+                apikey: SUPABASE_PUBLISHABLE_KEY,
+                Authorization: `Bearer ${session ? session.access_token : SUPABASE_PUBLISHABLE_KEY}`,
+                ...(options.body !== undefined && !(options.body instanceof Blob) ? { 'Content-Type': 'application/json' } : {}),
+                ...(options.headers || {})
+            };
+            const response = await fetch(`${SUPABASE_URL}${path}`, {
+                method: options.method || 'GET',
+                headers,
+                body: options.body === undefined ? undefined :
+                    (options.body instanceof Blob ? options.body : JSON.stringify(options.body))
+            });
+            if (response.status === 401 && options.admin && retry) {
+                await refreshSupabaseSession();
+                return supabaseRequest(path, options, false);
+            }
+            if (!response.ok) {
+                const detail = await response.text();
+                throw new Error(`Supabase ${response.status}: ${detail || response.statusText}`);
+            }
+            if (options.responseType === 'blob') return response.blob();
+            if (response.status === 204) return null;
+            const text = await response.text();
+            return text ? JSON.parse(text) : null;
+        }
+
+        function supabaseStoragePath(path) {
+            return String(path).split('/').map(encodeURIComponent).join('/');
+        }
+
+        function supabasePublicImageUrl(path) {
+            return `${SUPABASE_URL}/storage/v1/object/public/indoproperti-public/${supabaseStoragePath(path)}`;
+        }
+
+        function mapSupabaseSubmission(row) {
+            return {
+                id: row.id,
+                timestamp: row.submitted_at,
+                type: row.submission_type,
+                category: row.category,
+                name: row.name,
+                phone: row.phone,
+                location: row.location,
+                price: row.price,
+                area: row.area,
+                notes: row.notes,
+                attachments: Array.isArray(row.attachments) ? row.attachments : [],
+                status: row.status,
+                isPosted: row.is_posted
+            };
+        }
+
+        function mapSupabaseListing(row) {
+            const images = Array.isArray(row.images) ? row.images : [];
+            return {
+                id: row.id,
+                title: row.title,
+                category: row.category,
+                statusTag: row.status_tag,
+                price: row.price,
+                location: row.location,
+                lt: row.lt,
+                lb: row.lb,
+                sertifikat: row.sertifikat,
+                zonasi: row.zonasi,
+                image: row.image || images[0] || '',
+                images,
+                attachments: Array.isArray(row.attachments) ? row.attachments : [],
+                desc: row.description,
+                approvedAt: row.approved_at,
+                published: row.published
+            };
+        }
+
+        async function uploadSupabaseFile(bucket, path, blob, contentType, admin = false) {
+            return supabaseRequest(`/storage/v1/object/${bucket}/${supabaseStoragePath(path)}`, {
+                method: 'POST',
+                admin,
+                body: blob,
+                headers: { 'Content-Type': contentType || 'application/octet-stream', 'x-upsert': 'false' }
+            });
+        }
+
+        async function createSupabaseSubmission(entry, files) {
+            const attachments = [];
+            for (const file of files) {
+                const safeName = file.name.replace(/[^A-Za-z0-9._-]/g, '_').slice(0, 120) || 'lampiran';
+                const path = `${entry.id}/${createUniqueId('FILE')}-${safeName}`;
+                await uploadSupabaseFile('indoproperti-private', path, file, file.type, false);
+                attachments.push({ path, name: file.name, type: file.type, size: file.size });
+            }
+            await supabaseRequest('/rest/v1/submissions', {
+                method: 'POST',
+                body: {
+                    id: entry.id,
+                    submitted_at: entry.timestamp,
+                    submission_type: entry.type,
+                    category: entry.category,
+                    name: entry.name,
+                    phone: entry.phone,
+                    location: entry.location,
+                    price: entry.price,
+                    area: entry.area,
+                    notes: entry.notes,
+                    attachments
+                }
+            });
+        }
+
+        async function uploadListingImage(value, index, listingId) {
+            if (typeof value !== 'string' || !value.startsWith('data:')) return value;
+            const response = await fetch(value);
+            const blob = await response.blob();
+            const extension = blob.type === 'image/png' ? 'png' : (blob.type === 'image/webp' ? 'webp' : 'jpg');
+            const path = `${listingId}/${Date.now()}-${index}.${extension}`;
+            await uploadSupabaseFile('indoproperti-public', path, blob, blob.type, true);
+            return supabasePublicImageUrl(path);
+        }
+
+        async function makeListingImagesPublic(entry) {
+            const candidateImages = Array.isArray(entry.images) ? entry.images : [entry.image];
+            const images = [];
+            for (const [index, image] of candidateImages.filter(Boolean).entries()) {
+                images.push(await uploadListingImage(image, index, entry.id));
+            }
+            const privatePhoto = (Array.isArray(entry.attachments) ? entry.attachments : [])
+                .find(file => file && file.path && String(file.type || '').startsWith('image/'));
+            if (privatePhoto && (!images.length || images[0].includes('placehold.co'))) {
+                const blob = await supabaseRequest(
+                    `/storage/v1/object/indoproperti-private/${supabaseStoragePath(privatePhoto.path)}`,
+                    { admin: true, responseType: 'blob' }
+                );
+                const extension = privatePhoto.type === 'image/png' ? 'png' : (privatePhoto.type === 'image/webp' ? 'webp' : 'jpg');
+                const path = `${entry.id}/${Date.now()}-0.${extension}`;
+                await uploadSupabaseFile('indoproperti-public', path, blob, privatePhoto.type, true);
+                if (images.length) images[0] = supabasePublicImageUrl(path);
+                else images.push(supabasePublicImageUrl(path));
+            }
+            return images;
+        }
 
         const DEFAULT_ADS = {
             top: { active: true, type: 'banner', imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80', linkUrl: 'https://wa.me/6282126526162', adsenseClient: '', adsenseSlot: '', htmlCode: '' },
@@ -1419,10 +1565,7 @@
             loadSubmissions();
             loadAds();
             updateSystemModeBadge();
-            checkAdminSession();
-            if (!IS_LOCAL_FILE && getGoogleAppsScriptUrl()) {
-                await testGoogleScriptConnection();
-            }
+            await checkAdminSession();
             if (IS_PUBLIC_HOSTED) {
                 document.getElementById('admin-nav-btn').classList.add('hidden');
             }
@@ -1443,10 +1586,9 @@
         }
 
         function fetchSharedData() {
-            if (!getGoogleAppsScriptUrl()) {
-                return Promise.resolve({ ok: false, error: 'Google Apps Script belum dikonfigurasi. Mode lokal aktif.' });
-            }
-            return fetchDriveJson();
+            if (!isSupabaseSyncEnabled()) return Promise.resolve({ ok: false, error: 'Supabase belum dikonfigurasi.' });
+            return supabaseRequest('/rest/v1/listings?select=*&published=eq.true&order=approved_at.desc')
+                .then(rows => ({ ok: true, listings: rows.map(mapSupabaseListing) }));
         }
 
         function fetchDriveJson(parameters = {}, timeoutMs = 15000) {
@@ -1482,7 +1624,7 @@
         }
 
         async function loadSharedData(legacyListings, legacySubmissions) {
-            if (IS_LOCAL_FILE || !getGoogleAppsScriptUrl()) {
+            if (!isSupabaseSyncEnabled()) {
                 renderPublicListings();
                 if (isLoggedIn) renderAdminTable();
                 renderAdminListingTable();
@@ -1491,50 +1633,26 @@
 
             try {
                 const data = await fetchSharedData();
-                if (!data || !data.ok || !Array.isArray(data.listings)) {
-                    throw new Error(data && data.error ? data.error : 'Respons data Google Drive tidak valid.');
-                }
-
-                const localListingSource = Array.isArray(legacyListings) ? legacyListings : listings;
-                const remoteListingIds = new Set(data.listings.map(item => String(item.id)));
-                listings = [
-                    ...data.listings,
-                    ...localListingSource.filter(item => item && item.id && !remoteListingIds.has(String(item.id)))
-                ];
-                // Beberapa versi Apps Script mengembalikan submissions; gabungkan agar admin
-                // dapat melihat pengajuan dari perangkat lain. Data lokal tetap dipertahankan.
-                if (Array.isArray(data.submissions)) {
-                    const localSubmissionSource = Array.isArray(legacySubmissions) ? legacySubmissions : submissions;
-                    const remoteSubmissionIds = new Set(data.submissions.map(item => String(item.id)));
-                    submissions = [
-                        ...data.submissions,
-                        ...localSubmissionSource.filter(item => item && item.id && !remoteSubmissionIds.has(String(item.id)))
-                    ];
-                    try { localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions)); } catch (storageError) { console.warn('Tidak dapat menyimpan cache pengajuan lokal.', storageError); }
-                }
+                if (!data || !data.ok || !Array.isArray(data.listings)) throw new Error('Respons data Supabase tidak valid.');
+                listings = data.listings.length ? data.listings : JSON.parse(JSON.stringify(INITIAL_LISTINGS));
                 driveConnected = true;
-
-                if (localStorage.getItem(DRIVE_MIGRATION_KEY) !== 'complete') {
-                    const toMigrateSubmissions = (Array.isArray(legacySubmissions) ? legacySubmissions : [])
-                        .filter(item => item && item.id);
-
-                    const migrationResults = await Promise.all([
-                        ...toMigrateSubmissions.map(item => syncRecordToGoogleDrive(item, 'submission', 'upsert', true))
-                    ]);
-                    if (migrationResults.every(result => result === 'saved')) {
-                        localStorage.setItem(DRIVE_MIGRATION_KEY, 'complete');
-                    } else if (migrationResults.length > 0) {
-                        showToast('Migrasi data lama ke Drive belum terkonfirmasi. Data lama tetap disimpan di browser ini.', 'error');
-                    }
-                }
-
+                if (isLoggedIn) await loadSupabaseAdminData();
                 renderPublicListings();
                 renderAdminListingTable();
                 if (isLoggedIn) renderAdminTable();
             } catch (error) {
-                console.error('Gagal memuat data bersama dari Google Drive:', error);
-                showToast('Data Drive belum dapat dimuat. Menampilkan data lama dari browser ini; coba muat ulang halaman.', 'error');
+                console.error('Gagal memuat data bersama dari Supabase:', error);
+                showToast('Data Supabase belum dapat dimuat. Periksa konfigurasi tabel dan kebijakan akses.', 'error');
             }
+        }
+
+        async function loadSupabaseAdminData() {
+            const rows = await supabaseRequest('/rest/v1/submissions?select=*&order=created_at.desc', { admin: true });
+            submissions = rows.map(mapSupabaseSubmission);
+            const listingRows = await supabaseRequest('/rest/v1/listings?select=*&order=approved_at.desc', { admin: true });
+            listings = listingRows.map(mapSupabaseListing);
+            renderAdminTable();
+            renderAdminListingTable();
         }
 
         function loadListings() {
@@ -1553,6 +1671,10 @@
         }
 
         function loadSubmissions() {
+            if (isSupabaseSyncEnabled()) {
+                submissions = [];
+                return;
+            }
             const stored = localStorage.getItem('indoproperti_submissions');
             if (stored) {
                 try { submissions = JSON.parse(stored); } catch(e) { submissions = INITIAL_SUBMISSIONS; }
@@ -1562,7 +1684,9 @@
         }
 
         function saveSubmissions() {
-            localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions));
+            if (!isSupabaseSyncEnabled()) {
+                localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions));
+            }
             if (isLoggedIn) {
                 renderAdminTable();
             }
@@ -1724,11 +1848,21 @@
             showToast('Konfigurasi Iklan Ads berhasil diperbarui!');
         }
 
-        function checkAdminSession() {
-            const session = sessionStorage.getItem('indoproperti_admin_logged');
-            if (session === 'true') {
+        async function checkAdminSession() {
+            if (!isSupabaseSyncEnabled()) return;
+            const session = getSupabaseSession();
+            if (!session) return;
+            try {
+                const user = await supabaseRequest('/auth/v1/user', { admin: true });
+                if (String(user.email || '').toLowerCase() !== SUPABASE_ADMIN_EMAIL) {
+                    localStorage.removeItem(SUPABASE_SESSION_KEY);
+                    return;
+                }
                 isLoggedIn = true;
                 updateNavLoginBtn();
+            } catch (error) {
+                console.warn('Sesi admin Supabase tidak dapat dipulihkan:', error);
+                localStorage.removeItem(SUPABASE_SESSION_KEY);
             }
         }
 
@@ -1763,6 +1897,15 @@
         }
 
         async function syncRecordToGoogleDrive(entry, recordType = 'submission', action = 'upsert', skipNotification = false) {
+            if (isSupabaseSyncEnabled()) {
+                try {
+                    await syncRecordToSupabase(entry, recordType, action);
+                    return 'saved';
+                } catch (error) {
+                    console.error('Sinkronisasi Supabase gagal:', error);
+                    return error && error.message && error.message.includes('Supabase 401') ? 'rejected' : 'unavailable';
+                }
+            }
             const scriptUrl = getGoogleAppsScriptUrl();
             if (!scriptUrl) return 'not-configured';
 
@@ -1825,8 +1968,81 @@
             }
         }
 
+        async function syncRecordToSupabase(entry, recordType, action) {
+            if (!isLoggedIn) throw new Error('Login admin Supabase diperlukan untuk mengubah data.');
+            const table = recordType === 'listing' ? 'listings' : 'submissions';
+            const id = encodeURIComponent(String(entry.id));
+            if (action === 'delete') {
+                await supabaseRequest(`/rest/v1/${table}?id=eq.${id}`, { method: 'DELETE', admin: true });
+                return;
+            }
+
+            if (recordType === 'submission') {
+                const attachments = [];
+                for (const [index, file] of (Array.isArray(entry.attachments) ? entry.attachments : []).entries()) {
+                    if (file && file.path) {
+                        attachments.push({ path: file.path, name: file.name || '', type: file.type || '', size: file.size || 0 });
+                    } else if (file && file.dataUrl) {
+                        const blob = await (await fetch(file.dataUrl)).blob();
+                        const safeName = String(file.name || `lampiran-${index + 1}`).replace(/[^A-Za-z0-9._-]/g, '_').slice(0, 120);
+                        const path = `${entry.id}/${createUniqueId('FILE')}-${safeName}`;
+                        await uploadSupabaseFile('indoproperti-private', path, blob, file.type || blob.type, true);
+                        attachments.push({ path, name: file.name || safeName, type: file.type || blob.type, size: file.size || blob.size });
+                    } else if (file && file.url) {
+                        attachments.push({ url: file.url, name: file.name || 'Lampiran Google Drive', type: file.type || '', size: file.size || 0 });
+                    }
+                }
+                await supabaseRequest('/rest/v1/submissions?on_conflict=id', {
+                    method: 'POST',
+                    admin: true,
+                    headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+                    body: {
+                        id: entry.id,
+                        submitted_at: entry.timestamp || new Date().toISOString(),
+                        submission_type: entry.type,
+                        category: entry.category,
+                        name: entry.name,
+                        phone: entry.phone,
+                        location: entry.location,
+                        price: entry.price || '-',
+                        area: entry.area || '-',
+                        notes: entry.notes || '-',
+                        attachments,
+                        status: entry.status || 'Baru',
+                        is_posted: entry.isPosted === true
+                    }
+                });
+                return;
+            }
+
+            const images = await makeListingImagesPublic(entry);
+            await supabaseRequest('/rest/v1/listings?on_conflict=id', {
+                method: 'POST',
+                admin: true,
+                headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+                body: {
+                    id: entry.id,
+                    title: entry.title,
+                    category: entry.category,
+                    status_tag: entry.statusTag || 'DIJUAL',
+                    price: entry.price || '-',
+                    location: entry.location || '',
+                    lt: entry.lt || '',
+                    lb: entry.lb || '',
+                    sertifikat: entry.sertifikat || '',
+                    zonasi: entry.zonasi || '',
+                    image: images[0] || '',
+                    images,
+                    attachments: [],
+                    description: entry.desc || '',
+                    approved_at: entry.approvedAt || new Date().toISOString(),
+                    published: entry.published !== false
+                }
+            });
+        }
+
         function isLocalMode() {
-            return IS_LOCAL_FILE || !getGoogleAppsScriptUrl();
+            return !isSupabaseSyncEnabled();
         }
 
         function isSaveConfirmed(result) {
@@ -1835,21 +2051,23 @@
 
         function showDriveSyncToast(result, successMessage) {
             if (result === 'saved') {
-                if (getGoogleAppsScriptUrl()) {
+                if (isSupabaseSyncEnabled()) {
+                    showToast(`${successMessage} Data sudah terkonfirmasi tersimpan di Supabase.`, 'success');
+                } else if (getGoogleAppsScriptUrl()) {
                     showToast(`${successMessage} Data sudah terkonfirmasi di Google Drive.`, 'success');
                 } else {
                     showToast(`${successMessage} Tersimpan di browser lokal dan tampil di website.`, 'success');
                 }
             } else if (result === 'pending') {
-                showToast('Data belum terkonfirmasi tersimpan. Periksa Google Sheet sebelum mencoba ulang.', 'error');
+                showToast('Data belum terkonfirmasi tersimpan. Periksa database sebelum mencoba ulang.', 'error');
             } else if (result === 'not-configured') {
                 showToast('Mode lokal aktif: data tersimpan di browser ini dan siap tampil di website.', 'success');
             } else if (result === 'rejected') {
-                showToast('Google Apps Script menolak pengajuan. Periksa ukuran/format file dan eksekusi Apps Script sebelum mengirim ulang.', 'error');
+                showToast('Server menolak pengajuan. Periksa format data/lampiran dan coba lagi.', 'error');
             } else if (result === 'too-large') {
                 showToast('Total ukuran data dan lampiran melebihi 12 MB. Kurangi jumlah atau ukuran file lalu coba kembali.', 'error');
             } else {
-                showToast('Konfirmasi penyimpanan belum diterima. Periksa Google Sheet sebelum mengirim ulang agar tidak membuat data duplikat.', 'error');
+                showToast('Konfirmasi penyimpanan belum diterima. Periksa database sebelum mencoba ulang agar tidak membuat data duplikat.', 'error');
             }
         }
 
@@ -2108,7 +2326,7 @@
                     price: document.getElementById('pub-price').value.trim() || '-',
                     area: document.getElementById('pub-area').value.trim() || '-',
                     notes: document.getElementById('pub-notes').value.trim() || '-',
-                    attachments: await Promise.all(selectedFiles.map(fileToDataUrl)),
+                    attachments: isSupabaseSyncEnabled() ? [] : await Promise.all(selectedFiles.map(fileToDataUrl)),
                     status: 'Baru',
                     isPosted: false
                 };
@@ -2122,17 +2340,31 @@
                     return;
                 }
 
-                const syncResult = await syncRecordToGoogleDrive(newEntry, 'submission');
+                let syncResult;
+                try {
+                    if (isSupabaseSyncEnabled()) {
+                        await createSupabaseSubmission(newEntry, selectedFiles);
+                        syncResult = 'saved';
+                    } else {
+                        syncResult = await syncRecordToGoogleDrive(newEntry, 'submission');
+                    }
+                } catch (syncError) {
+                    console.error('Pengajuan tidak berhasil disimpan ke Supabase:', syncError);
+                    showToast('Pengajuan gagal disimpan ke server. Data formulir tetap ada; coba lagi atau hubungi admin.', 'error');
+                    return;
+                }
                 if (syncResult !== 'saved') {
-                    showDriveSyncToast(syncResult, 'Pengajuan belum terkonfirmasi tersimpan ke Google Sheet. Data belum dianggap terkirim; silakan coba lagi atau hubungi admin.');
+                    showDriveSyncToast(syncResult, 'Pengajuan belum terkonfirmasi tersimpan. Data belum dianggap terkirim; silakan coba lagi atau hubungi admin.');
                     return;
                 }
 
-                submissions.unshift(newEntry);
-                saveSubmissions();
+                if (!isSupabaseSyncEnabled()) {
+                    submissions.unshift(newEntry);
+                    saveSubmissions();
+                }
                 form.reset();
                 document.getElementById('pub-files-preview').innerHTML = '';
-                showDriveSyncToast(syncResult, 'Pengajuan berhasil diterima dan dikonfirmasi tersimpan.');
+                showDriveSyncToast(syncResult, 'Pengajuan berhasil diterima dan tersimpan.');
             } catch (error) {
                 console.error('Gagal mengirim formulir pengajuan:', error);
                 showToast('Pengajuan gagal diproses: ' + (error && error.message ? error.message : 'kesalahan tidak diketahui') + '. Data belum dikonfirmasi tersimpan.', 'error');
@@ -2196,7 +2428,7 @@
             resetLoginForm();
         }
 
-        function handleLoginSubmit(e) {
+        async function handleLoginSubmit(e) {
             e.preventDefault();
             const modal = document.getElementById('login-modal');
             const emailInput = document.getElementById('login-email');
@@ -2211,7 +2443,7 @@
             error.classList.remove('flex');
 
             if (modal.dataset.step !== 'password') {
-                if (email !== 'elghifarin@gmail.com') {
+                if (email !== SUPABASE_ADMIN_EMAIL) {
                     errorText.textContent = 'Email tidak terdaftar sebagai administrator.';
                     error.classList.remove('hidden');
                     error.classList.add('flex');
@@ -2227,24 +2459,72 @@
                 return;
             }
 
-            // Catatan: pemeriksaan di browser tidak aman untuk situs publik; gunakan autentikasi backend untuk produksi.
-            if (email === 'elghifarin@gmail.com' && passwordInput.value === 'admin123') {
+            if (!isSupabaseConfigured()) {
+                errorText.textContent = 'Autentikasi Supabase belum dikonfigurasi.';
+                error.classList.remove('hidden');
+                error.classList.add('flex');
+                passwordInput.focus();
+                return;
+            }
+            submitBtn.disabled = true;
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                    method: 'POST',
+                    headers: { apikey: SUPABASE_PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: passwordInput.value })
+                });
+                const session = await response.json();
+                if (!response.ok) throw new Error(session.msg || session.message || 'Email atau password salah.');
+                if (String(session.user && session.user.email || '').toLowerCase() !== SUPABASE_ADMIN_EMAIL) {
+                    await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+                        method: 'POST',
+                        headers: {
+                            apikey: SUPABASE_PUBLISHABLE_KEY,
+                            Authorization: `Bearer ${session.access_token}`
+                        }
+                    });
+                    throw new Error('Akun ini tidak terdaftar sebagai administrator.');
+                }
+                saveSupabaseSession(session);
                 isLoggedIn = true;
-                sessionStorage.setItem('indoproperti_admin_logged', 'true');
                 closeLoginModal();
                 updateNavLoginBtn();
+                try {
+                    await loadSupabaseAdminData();
+                } catch (dataError) {
+                    console.error('Data admin Supabase tidak dapat dimuat:', dataError);
+                    showToast('Login berhasil, tetapi tabel belum siap. Jalankan berkas supabase-schema.sql di SQL Editor.', 'error');
+                    return;
+                }
                 showSection('admin-page');
-                showToast('Login admin berhasil. Selamat datang!');
-            } else {
-                errorText.textContent = 'Sandi salah. Silakan coba lagi.';
+                showToast('Login admin Supabase berhasil.');
+            } catch (loginError) {
+                errorText.textContent = loginError.message || 'Login gagal. Periksa email dan password.';
                 error.classList.remove('hidden');
                 error.classList.add('flex');
                 passwordInput.value = '';
                 passwordInput.focus();
+            } finally {
+                submitBtn.disabled = false;
             }
         }
 
-        function logoutAdmin() {
+        async function logoutAdmin() {
+            const session = getSupabaseSession();
+            if (session) {
+                try {
+                    await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+                        method: 'POST',
+                        headers: {
+                            apikey: SUPABASE_PUBLISHABLE_KEY,
+                            Authorization: `Bearer ${session.access_token}`
+                        }
+                    });
+                } catch (error) {
+                    console.warn('Sesi admin tidak dapat ditutup di server:', error);
+                }
+            }
+            localStorage.removeItem(SUPABASE_SESSION_KEY);
             isLoggedIn = false;
             sessionStorage.removeItem('indoproperti_admin_logged');
             updateNavLoginBtn();
@@ -2314,11 +2594,7 @@
                     <tr>
                         <td colspan="8" class="p-8 text-center text-slate-300">
                             <i class="fa-solid fa-lock text-amber-400 text-2xl mb-3 block"></i>
-                            Data pengajuan yang tersedia di server atau perangkat ini ditampilkan di bawah. Jika pengajuan dari perangkat lain belum muncul, periksa koneksi Google Apps Script dan respons data bersama.
-                            <a href="${GOOGLE_SHEET_URL}" target="_blank" rel="noopener noreferrer" class="block mt-3 text-amber-400 font-bold hover:underline">
-                                Buka Google Sheet untuk melihat dan mengelola pengajuan
-                                <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
-                            </a>
+                            Data pengajuan privat tersedia hanya untuk administrator yang sudah login.
                         </td>
                     </tr>
                 ` : '';
@@ -2461,6 +2737,7 @@
                         : (isPropertyRequest
                             ? 'Permintaan pencarian properti yang telah dikonfirmasi admin.'
                             : 'Pengajuan titip jual yang telah dikonfirmasi admin.'),
+                    published: true,
                     approvedAt: new Date().toISOString()
                 };
 
@@ -2513,10 +2790,12 @@
                     // di perangkat ini agar tombol tidak membuat listing duplikat saat dicoba ulang.
                     sub.isPosted = true;
                     sub.status = 'Selesai';
-                    try { localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions)); } catch (storageError) { console.warn(storageError); }
+                    if (!isSupabaseSyncEnabled()) {
+                        try { localStorage.setItem('indoproperti_submissions', JSON.stringify(submissions)); } catch (storageError) { console.warn(storageError); }
+                    }
                     renderAdminTable();
                     renderAdminListingTable();
-                    showToast('Listing sudah tersimpan, tetapi status pengajuan belum terkonfirmasi di server. Periksa Google Sheet sebelum tindakan berikutnya.', 'warning');
+                    showToast('Listing sudah tersimpan, tetapi status pengajuan belum terkonfirmasi di server. Periksa database sebelum tindakan berikutnya.', 'warning');
                     return;
                 }
                 saveSubmissions();
@@ -2558,10 +2837,32 @@
             }
         }
 
-        function viewDetail(id) {
+        async function viewDetail(id) {
             const item = submissions.find(s => s.id === id);
             if (!item) return;
 
+            const attachments = Array.isArray(item.attachments) ? item.attachments : [];
+            const attachmentLinks = await Promise.all(attachments.map(async file => {
+                if (file && file.path && isLoggedIn) {
+                    try {
+                        const result = await supabaseRequest(
+                            `/storage/v1/object/sign/indoproperti-private/${supabaseStoragePath(file.path)}`,
+                            { method: 'POST', admin: true, body: { expiresIn: 300 } }
+                        );
+                        const url = /^https?:\/\//i.test(result.signedURL)
+                            ? result.signedURL
+                            : `${SUPABASE_URL}/storage/v1${result.signedURL}`;
+                        return `<a href="${safeText(url)}" target="_blank" rel="noopener noreferrer" class="block text-amber-400 hover:underline">${safeText(file.name || 'Lampiran')}</a>`;
+                    } catch (error) {
+                        console.error('Gagal membuat tautan lampiran privat:', error);
+                        return `<span class="block text-slate-500">${safeText(file.name || 'Lampiran')} (tidak dapat dibuka)</span>`;
+                    }
+                }
+                if (file && file.url && /^https:\/\//i.test(file.url)) {
+                    return `<a href="${safeText(file.url)}" target="_blank" rel="noopener noreferrer" class="block text-amber-400 hover:underline">${safeText(file.name || 'Lampiran Drive')}</a>`;
+                }
+                return `<span class="block text-slate-500">${safeText(file && file.name || 'Lampiran')}</span>`;
+            }));
             const modalBody = document.getElementById('detail-modal-body');
             modalBody.innerHTML = `
                 <div class="grid grid-cols-2 gap-2 pb-3 border-b border-slate-800">
@@ -2585,6 +2886,7 @@
                     <span class="text-slate-500 text-xs block mb-1">Catatan Tambahan:</span>
                     <p class="text-slate-300 text-xs leading-relaxed whitespace-pre-wrap">${safeText(item.notes)}</p>
                 </div>
+                ${attachmentLinks.length ? `<div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2"><span class="text-slate-500 text-xs block mb-1">Lampiran:</span>${attachmentLinks.join('')}</div>` : ''}
             `;
             document.getElementById('detail-modal').classList.remove('hidden');
         }
@@ -2762,8 +3064,9 @@
                     if (!combined.length && existingListing && existingListing.image) combined.push(existingListing.image);
                     return combined.slice(0,4);
                 })(),
-                image: '', 
+                image: '',
                 attachments: (existingListing && Array.isArray(existingListing.attachments)) ? existingListing.attachments : [],
+                published: shouldPublish,
                 desc: document.getElementById('l-desc').value || '-'
             };
 
@@ -2862,14 +3165,13 @@
 
         function updateSystemModeBadge() {
             const badge = document.getElementById('system-mode-badge');
-            const input = document.getElementById('drive-script-url-input');
             const syncBanner = document.getElementById('sync-status-banner');
             const syncMessage = document.getElementById('sync-status-message');
             const isLocal = !isGoogleSyncEnabled();
 
             if (badge) {
                 badge.classList.remove('hidden');
-                badge.textContent = isLocal ? 'Mode Lokal • Data disimpan di browser' : 'Google Sync • Form & katalog terhubung';
+                badge.textContent = isLocal ? 'Mode Lokal • Data disimpan di browser' : 'Supabase • Form & katalog terhubung';
                 badge.className = isLocal
                     ? 'px-3 py-2 text-[10px] font-bold rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                     : 'px-3 py-2 text-[10px] font-bold rounded-xl border border-sky-500/40 bg-sky-500/10 text-sky-300';
@@ -2877,11 +3179,8 @@
             if (syncBanner && syncMessage) {
                 syncBanner.classList.toggle('hidden', !isLocal);
                 syncMessage.textContent = isLocal
-                    ? 'Data hanya tersimpan di browser ini dan tidak dapat dilihat dari perangkat lain. Aktifkan Google Apps Script untuk sinkronisasi.'
-                    : 'Info properti dari pengajuan akan tampil di katalog publik. Nama, nomor WhatsApp, dan lampiran tetap privat.';
-            }
-            if (input) {
-                input.value = getGoogleAppsScriptUrl();
+                    ? 'Data hanya tersimpan di browser ini dan tidak dapat dilihat dari perangkat lain. Hubungkan database Supabase untuk sinkronisasi.'
+                    : 'Pengajuan tersimpan privat. Informasi properti baru tampil di katalog setelah diterbitkan admin.';
             }
         }
 
@@ -2934,16 +3233,114 @@
             if (input) input.click();
         }
 
-        function importBackupJson(event) {
+        function parseCsvRows(text) {
+            const rows = [];
+            let row = [];
+            let value = '';
+            let quoted = false;
+            const input = String(text).replace(/^\uFEFF/, '');
+            for (let index = 0; index < input.length; index++) {
+                const char = input[index];
+                if (char === '"' && quoted && input[index + 1] === '"') {
+                    value += '"';
+                    index++;
+                } else if (char === '"') {
+                    quoted = !quoted;
+                } else if (char === ',' && !quoted) {
+                    row.push(value);
+                    value = '';
+                } else if ((char === '\n' || char === '\r') && !quoted) {
+                    if (char === '\r' && input[index + 1] === '\n') index++;
+                    row.push(value);
+                    if (row.some(cell => cell !== '')) rows.push(row);
+                    row = [];
+                    value = '';
+                } else {
+                    value += char;
+                }
+            }
+            row.push(value);
+            if (row.some(cell => cell !== '')) rows.push(row);
+            return rows;
+        }
+
+        function recordsFromGoogleSheetCsv(text) {
+            const rows = parseCsvRows(text);
+            if (rows.length < 2) throw new Error('CSV Google Sheets kosong atau tidak berisi baris data.');
+            const headers = rows[0].map(header => header.trim().toLowerCase());
+            const jsonIndex = headers.findIndex(header => header === 'data json');
+            const records = { listings: [], submissions: [] };
+            for (const row of rows.slice(1)) {
+                const isListing = String(row[1] || '').toLowerCase().includes('listing');
+                let record = null;
+                if (jsonIndex >= 0 && row[jsonIndex]) {
+                    try { record = JSON.parse(row[jsonIndex]); } catch (error) {
+                        console.warn('Kolom Data JSON tidak valid; gunakan kolom Sheet untuk baris ini.', error);
+                    }
+                }
+                if (!record) {
+                    const attachmentUrls = String(row[12] || '').split(/\r?\n/).filter(Boolean)
+                        .map(url => ({ url, name: 'Lampiran Google Drive', type: '', size: 0 }));
+                    if (isListing) {
+                        const area = String(row[9] || '').split('/');
+                        record = {
+                            id: row[2], title: row[3], statusTag: row[4], category: row[5],
+                            location: row[7], price: row[8], lt: area[0] || '', lb: area[1] || '',
+                            desc: row[10] || '', status: row[11] || 'Diposting',
+                            attachments: attachmentUrls, image: ''
+                        };
+                    } else {
+                        record = {
+                            id: row[2], timestamp: row[0], name: row[3], type: row[4],
+                            category: row[5], phone: row[6], location: row[7], price: row[8],
+                            area: row[9], notes: row[10], status: row[11] || 'Baru',
+                            attachments: attachmentUrls, isPosted: false
+                        };
+                    }
+                }
+                if (!record.id || record.deleted) continue;
+                records[isListing ? 'listings' : 'submissions'].push(record);
+            }
+            return records;
+        }
+
+        async function importBackupJson(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
                 try {
-                    const payload = JSON.parse(String(reader.result));
-                    if (Array.isArray(payload.listings)) listings = payload.listings;
-                    if (Array.isArray(payload.submissions)) submissions = payload.submissions;
+                    const text = String(reader.result);
+                    const payload = /\.csv$/i.test(file.name)
+                        ? recordsFromGoogleSheetCsv(text)
+                        : JSON.parse(text);
+                    if (!Array.isArray(payload.listings) && !Array.isArray(payload.submissions)) {
+                        throw new Error('Format file harus backup JSON IndoProperti atau ekspor CSV Google Sheets.');
+                    }
+                    const importedListings = Array.isArray(payload.listings) ? payload.listings : [];
+                    const importedSubmissions = Array.isArray(payload.submissions) ? payload.submissions : [];
+                    if (isSupabaseSyncEnabled()) {
+                        if (!isLoggedIn) throw new Error('Login admin Supabase diperlukan untuk impor data.');
+                        for (const record of importedSubmissions) {
+                            const result = await syncRecordToGoogleDrive(record, 'submission', 'upsert', true);
+                            if (result !== 'saved') throw new Error(`Pengajuan ${record.id} gagal diimpor (${result}).`);
+                        }
+                        for (const record of importedListings) {
+                            const result = await syncRecordToGoogleDrive(record, 'listing', 'upsert', true);
+                            if (result !== 'saved') throw new Error(`Listing ${record.id} gagal diimpor (${result}).`);
+                        }
+                        if (payload.adConfigs && typeof payload.adConfigs === 'object') {
+                            adConfigs = payload.adConfigs;
+                            saveAds();
+                        }
+                        await loadSupabaseAdminData();
+                        renderPublicListings();
+                        showToast(`Impor selesai: ${importedSubmissions.length} pengajuan dan ${importedListings.length} listing diproses. Data sumber tidak dihapus.`, 'success');
+                        return;
+                    }
+                    if (Array.isArray(payload.listings)) listings = importedListings;
+                    if (Array.isArray(payload.submissions)) submissions = importedSubmissions;
                     if (payload.adConfigs && typeof payload.adConfigs === 'object') adConfigs = payload.adConfigs;
 
                     saveListings();
@@ -2954,7 +3351,7 @@
                     showToast('Data berhasil dipulihkan dari backup.', 'success');
                 } catch (error) {
                     console.error('Gagal memulihkan backup:', error);
-                    showToast('File backup tidak valid atau rusak.', 'error');
+                    showToast(error.message || 'File backup tidak valid atau rusak.', 'error');
                 } finally {
                     event.target.value = '';
                 }
