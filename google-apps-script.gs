@@ -2,29 +2,32 @@
   notificationEmail: 'elghifarin@gmail.com',
   folderName: 'IndoProperti Data',
   spreadsheetName: 'Data Pengajuan IndoProperti',
+  spreadsheetId: '1ONdzYzsd477Am8R8CWI3xB6tP6ohOyK4fALDbHcL1U0',
+  folderId: '1oy2W6st6ryxtRt5IVDvvImAwYHBKdaZ1',
   folderProperty: 'INDOPROPERTI_DRIVE_FOLDER_ID',
-  spreadsheetProperty: 'INDOPROPERTI_SPREADSHEET_ID'
+  spreadsheetProperty: 'INDOPROPERTI_SPREADSHEET_ID',
+  adminTokenProperty: 'INDOPROPERTI_ADMIN_TOKEN'
 };
 
 function setupIndoProperti() {
   MailApp.getRemainingDailyQuota();
   const properties = PropertiesService.getScriptProperties();
-  let folderId = properties.getProperty(CONFIG.folderProperty);
+  let folderId = CONFIG.folderId || properties.getProperty(CONFIG.folderProperty);
   let folder = folderId ? DriveApp.getFolderById(folderId) : null;
 
   if (!folder) {
     folder = DriveApp.createFolder(CONFIG.folderName);
-    properties.setProperty(CONFIG.folderProperty, folder.getId());
   }
+  properties.setProperty(CONFIG.folderProperty, folder.getId());
 
-  let spreadsheetId = properties.getProperty(CONFIG.spreadsheetProperty);
+  let spreadsheetId = CONFIG.spreadsheetId || properties.getProperty(CONFIG.spreadsheetProperty);
   let spreadsheet = spreadsheetId ? SpreadsheetApp.openById(spreadsheetId) : null;
 
   if (!spreadsheet) {
     spreadsheet = SpreadsheetApp.create(CONFIG.spreadsheetName);
     DriveApp.getFileById(spreadsheet.getId()).moveTo(folder);
-    properties.setProperty(CONFIG.spreadsheetProperty, spreadsheet.getId());
   }
+  properties.setProperty(CONFIG.spreadsheetProperty, spreadsheet.getId());
 
   let sheet = spreadsheet.getSheetByName('Data');
   if (!sheet) {
@@ -53,6 +56,12 @@ function setupIndoProperti() {
 
 function doGet(e) {
   try {
+    const ackToken = e && e.parameter && e.parameter.ack;
+    if (ackToken) {
+      const cachedAck = CacheService.getScriptCache().get('ack:' + ackToken);
+      if (cachedAck) return jsonpResponse(e.parameter.callback, JSON.parse(cachedAck));
+    }
+
     const properties = PropertiesService.getScriptProperties();
     const spreadsheetId = properties.getProperty(CONFIG.spreadsheetProperty);
     if (!spreadsheetId) throw new Error('Jalankan setupIndoProperti terlebih dahulu.');
@@ -61,7 +70,6 @@ function doGet(e) {
     if (!sheet) throw new Error('Sheet Data tidak ditemukan.');
 
     const values = sheet.getDataRange().getValues();
-    const ackToken = e && e.parameter && e.parameter.ack;
     if (ackToken) {
       const ackRecordType = e.parameter.recordType === 'listing' ? 'listing' : 'submission';
       const ackFound = values.slice(1).some(function(row) {
@@ -112,6 +120,7 @@ function doGet(e) {
 }
 
 function doPost(e) {
+  let data = null;
   try {
     if (!e || !e.postData || !e.postData.contents) {
       throw new Error('Request kosong atau tidak valid.');
@@ -120,35 +129,13 @@ function doPost(e) {
       throw new Error('Ukuran data melebihi batas 12 MB.');
     }
 
-    const data = JSON.parse(e.postData.contents);
+    data = JSON.parse(e.postData.contents);
     if (!data || data.source !== 'indoproperti') {
       throw new Error('Sumber data tidak valid.');
     }
-    if (data.action !== 'upsert' || data.recordType !== 'submission') {
-      throw new Error('Endpoint publik hanya menerima pengajuan baru.');
-    }
-
-    const allowedTypes = ['Titip Jual Properti', 'Cari / Request Properti'];
-    const allowedCategories = [
-      'Lahan Industri', 'Bangunan Pabrik', 'Gudang Logistik',
-      'Ruko / Komersial', 'Lahan Lainnya'
-    ];
-    if (allowedTypes.indexOf(data.type) === -1 || allowedCategories.indexOf(data.category) === -1) {
-      throw new Error('Jenis atau kategori pengajuan tidak valid.');
-    }
-    ['name', 'phone', 'location'].forEach(function(field) {
-      if (!String(data[field] || '').trim()) throw new Error('Kolom wajib belum diisi: ' + field);
-    });
-    if (String(data.name).length > 120 || String(data.phone).length > 32 ||
-        String(data.location).length > 200 || String(data.price || '').length > 120 ||
-        String(data.area || '').length > 120 || String(data.notes || '').length > 4000) {
-      throw new Error('Panjang salah satu kolom melebihi batas.');
-    }
-    const attachments = Array.isArray(data.attachments) ? data.attachments : [];
-    if (attachments.length > 5 || attachments.some(function(file) {
-      return !file || typeof file.dataUrl !== 'string' || file.dataUrl.length > 2 * 1024 * 1024;
-    })) {
-      throw new Error('Lampiran tidak valid atau melebihi batas ukuran.');
+    const clientRequestId = String(data.clientRequestId || '');
+    if (!/^REQ-\d+-[a-f0-9]{32}$/.test(clientRequestId)) {
+      throw new Error('ID permintaan tidak valid.');
     }
 
     const properties = PropertiesService.getScriptProperties();
@@ -165,73 +152,239 @@ function doPost(e) {
       throw new Error('Sheet Data tidak ditemukan. Jalankan setupIndoProperti kembali.');
     }
 
-    const recordType = 'submission';
-    const id = String(data.id || '');
-    if (!/^IP-[A-Za-z0-9-]{1,80}$/.test(id)) throw new Error('ID pengajuan tidak valid.');
     const rows = sheet.getDataRange().getValues();
-    const rowNumber = findRecordRow(rows, recordType, id);
-    if (rowNumber) throw new Error('Pengajuan dengan ID tersebut sudah pernah diterima.');
-
-    const folderLinks = saveAttachments(folder, attachments, false);
-    const record = {
-      recordType,
-      id,
-      timestamp: String(data.timestamp || ''),
-      type: data.type,
-      category: data.category,
-      name: String(data.name).trim(),
-      phone: String(data.phone).trim(),
-      location: String(data.location).trim(),
-      price: String(data.price || '-').trim(),
-      area: String(data.area || '-').trim(),
-      notes: String(data.notes || '-').trim(),
-      status: 'Baru',
-      isPosted: false,
-      attachments: folderLinks,
-      clientRequestId: String(data.clientRequestId || '')
-    };
-    const nameOrTitle = record.name;
-    const type = record.type;
-    const row = [
-      new Date(),
-      'Pengajuan',
-      sheetSafeCell(id),
-      sheetSafeCell(nameOrTitle),
-      sheetSafeCell(type),
-      sheetSafeCell(record.category),
-      sheetSafeCell(record.phone),
-      sheetSafeCell(record.location),
-      sheetSafeCell(record.price),
-      sheetSafeCell(record.area),
-      sheetSafeCell(record.notes),
-      'Baru',
-      folderLinks.map(function(file) { return file.url; }).join('\n'),
-      JSON.stringify(record)
-    ];
-
-    sheet.appendRow(row);
-
-    if (!data.skipNotification) {
-      const subject = 'Pengajuan baru IndoProperti: ' + (nameOrTitle || id);
-      const emailBody = [
-        'Data baru telah disimpan ke Google Drive.',
-        '',
-        'Jenis data: Pengajuan',
-        'ID: ' + id,
-        'Nama / Judul: ' + (nameOrTitle || '-'),
-        'Lokasi: ' + (record.location || '-'),
-        'Spreadsheet: ' + spreadsheet.getUrl(),
-        'Folder Drive: ' + folder.getUrl(),
-        folderLinks.length ? 'File:\n' + folderLinks.map(function(file) { return file.url; }).join('\n') : 'File: tidak ada'
-      ].join('\n');
-      MailApp.sendEmail(CONFIG.notificationEmail, subject, emailBody);
+    if (data.action === 'adminListSubmissions') {
+      requireAdminToken(data.adminToken);
+      const submissions = rows.slice(1).map(function(row) {
+        if (row[1] !== 'Pengajuan') return null;
+        return recordFromRow(row, 'submission');
+      }).filter(function(record) { return record && !record.deleted; }).reverse();
+      const offset = Math.max(0, Math.floor(Number(data.offset) || 0));
+      const limit = Math.min(10, Math.max(1, Math.floor(Number(data.limit) || 10)));
+      const result = {
+        ok: true,
+        submissions: submissions.slice(offset, offset + limit),
+        hasMore: offset + limit < submissions.length
+      };
+      cacheAcknowledgement(clientRequestId, result);
+      return jsonResponse({ ok: true, acknowledged: true });
     }
 
-    return jsonResponse({ ok: true, spreadsheetUrl: spreadsheet.getUrl(), folderUrl: folder.getUrl() });
+    const adminOperation = Boolean(data.adminToken);
+    if (adminOperation) requireAdminToken(data.adminToken);
+    if (!adminOperation && (data.action !== 'upsert' || data.recordType !== 'submission')) {
+      throw new Error('Endpoint publik hanya menerima pengajuan baru.');
+    }
+
+    if (data.action === 'delete') {
+      if (!adminOperation) throw new Error('Otorisasi admin diperlukan.');
+      const recordType = validateRecordType(data.recordType);
+      const id = validateRecordId(data.id, recordType);
+      const rowNumber = findRecordRow(rows, recordType, id);
+      const previous = rowNumber ? recordFromRow(rows[rowNumber - 1], recordType) : {};
+      const deletedRecord = Object.assign({}, previous, {
+        recordType: recordType,
+        id: id,
+        deleted: true,
+        status: previous.status || 'Dihapus',
+        attachments: previous.attachments || [],
+        clientRequestId: clientRequestId
+      });
+      writeRecord(sheet, rowNumber, deletedRecord, recordType);
+    } else if (data.action === 'upsert') {
+      const recordType = validateRecordType(data.recordType);
+      if (recordType === 'listing' && !adminOperation) throw new Error('Otorisasi admin diperlukan.');
+      const requestedId = validateRecordId(data.id, recordType);
+      const existingRow = findRecordRow(rows, recordType, requestedId);
+      if (!adminOperation && existingRow) {
+        cacheAcknowledgement(clientRequestId, {
+          ok: true,
+          spreadsheetUrl: spreadsheet.getUrl(),
+          duplicate: true
+        });
+        return jsonResponse({ ok: true, acknowledged: true });
+      }
+      const record = buildRecord(data, recordType, adminOperation, folder, clientRequestId);
+      writeRecord(sheet, existingRow, record, recordType);
+
+      if (!adminOperation && !data.skipNotification) {
+        const subject = 'Pengajuan baru IndoProperti: ' + (record.name || record.id);
+        const emailBody = [
+          'Data baru telah disimpan ke Google Drive.',
+          '',
+          'Jenis data: Pengajuan',
+          'ID: ' + record.id,
+          'Nama / Judul: ' + (record.name || '-'),
+          'Lokasi: ' + (record.location || '-'),
+          'Spreadsheet: ' + spreadsheet.getUrl(),
+          'Folder Drive: ' + folder.getUrl(),
+          record.attachments.length ? 'File:\n' + record.attachments.map(function(file) { return file.url; }).join('\n') : 'File: tidak ada'
+        ].join('\n');
+        try {
+          MailApp.sendEmail(CONFIG.notificationEmail, subject, emailBody);
+        } catch (notificationError) {
+          console.error('Pengajuan tersimpan, tetapi notifikasi email gagal dikirim:', notificationError);
+        }
+      }
+    } else {
+      throw new Error('Operasi tidak didukung.');
+    }
+
+    cacheAcknowledgement(clientRequestId, {
+      ok: true,
+      spreadsheetUrl: spreadsheet.getUrl(),
+      folderUrl: folder.getUrl()
+    });
+    return jsonResponse({ ok: true, acknowledged: true });
   } catch (error) {
     console.error(error);
+    if (data && /^REQ-\d+-[a-f0-9]{32}$/.test(String(data.clientRequestId || ''))) {
+      try {
+        cacheAcknowledgement(String(data.clientRequestId), {
+          ok: false,
+          error: error.message || String(error)
+        });
+      } catch (cacheError) {
+        console.error('Gagal menyimpan status error permintaan:', cacheError);
+      }
+    }
     return jsonResponse({ ok: false, error: error.message || String(error) });
   }
+}
+
+function requireAdminToken(token) {
+  const expected = PropertiesService.getScriptProperties().getProperty(CONFIG.adminTokenProperty);
+  if (!expected || expected.length < 32) {
+    throw new Error('Kunci admin belum dikonfigurasi pada Script Properties.');
+  }
+  if (typeof token !== 'string' || token !== expected) {
+    throw new Error('Kunci admin tidak valid.');
+  }
+}
+
+function cacheAcknowledgement(requestId, result) {
+  const succeeded = !result || result.ok !== false;
+  CacheService.getScriptCache().put('ack:' + requestId, JSON.stringify({
+    ok: succeeded,
+    acknowledged: succeeded,
+    result: result
+  }), 300);
+}
+
+function validateRecordType(recordType) {
+  if (recordType !== 'submission' && recordType !== 'listing') {
+    throw new Error('Jenis record tidak valid.');
+  }
+  return recordType;
+}
+
+function validateRecordId(value, recordType) {
+  const id = String(value || '');
+  const pattern = recordType === 'listing' ? /^LIST-[A-Za-z0-9-]{1,80}$/ : /^IP-[A-Za-z0-9-]{1,80}$/;
+  if (!pattern.test(id)) throw new Error('ID data tidak valid.');
+  return id;
+}
+
+function buildRecord(data, recordType, adminOperation, folder, clientRequestId) {
+  const id = validateRecordId(data.id, recordType);
+  const attachments = Array.isArray(data.attachments) ? data.attachments : [];
+  if (attachments.length > 5 || attachments.some(function(file) {
+    if (!file || String(file.name || '').length > 255 || String(file.type || '').length > 100) return true;
+    if (!adminOperation && typeof file.dataUrl !== 'string') return true;
+    return file.dataUrl && (typeof file.dataUrl !== 'string' || file.dataUrl.length > 12 * 1024 * 1024);
+  })) {
+    throw new Error('Lampiran tidak valid atau melebihi batas ukuran.');
+  }
+  let savedAttachments = [];
+  const record = {
+    recordType: recordType,
+    id: id,
+    timestamp: String(data.timestamp || ''),
+    clientRequestId: clientRequestId,
+    attachments: savedAttachments
+  };
+
+  if (recordType === 'submission') {
+    const allowedTypes = ['Titip Jual Properti', 'Cari / Request Properti'];
+    const allowedCategories = [
+      'Lahan Industri', 'Bangunan Pabrik', 'Gudang Logistik',
+      'Ruko / Komersial', 'Lahan Lainnya'
+    ];
+    if (allowedTypes.indexOf(data.type) === -1 || allowedCategories.indexOf(data.category) === -1) {
+      throw new Error('Jenis atau kategori pengajuan tidak valid.');
+    }
+    ['name', 'phone', 'location'].forEach(function(field) {
+      if (!String(data[field] || '').trim()) throw new Error('Kolom wajib belum diisi: ' + field);
+    });
+    if (String(data.name).length > 120 || String(data.phone).length > 32 ||
+        String(data.location).length > 200 || String(data.price || '').length > 120 ||
+        String(data.area || '').length > 120 || String(data.notes || '').length > 4000) {
+      throw new Error('Panjang salah satu kolom melebihi batas.');
+    }
+    record.type = data.type;
+    record.category = data.category;
+    record.name = String(data.name).trim();
+    record.phone = String(data.phone).trim();
+    record.location = String(data.location).trim();
+    record.price = String(data.price || '-').trim();
+    record.area = String(data.area || '-').trim();
+    record.notes = String(data.notes || '-').trim();
+    record.status = adminOperation ? String(data.status || 'Baru') : 'Baru';
+    if (['Baru', 'Di-Follow Up', 'Selesai', 'Ditolak'].indexOf(record.status) === -1) {
+      throw new Error('Status pengajuan tidak valid.');
+    }
+    record.isPosted = adminOperation && data.isPosted === true;
+  } else {
+    if (!String(data.title || '').trim() || String(data.title).length > 180 ||
+        String(data.category || '').length > 100 || String(data.location || '').length > 200 ||
+        String(data.desc || '').length > 4000 || String(data.price || '').length > 120) {
+      throw new Error('Data listing tidak valid atau melebihi batas.');
+    }
+    record.title = String(data.title).trim();
+    record.category = String(data.category || '').trim();
+    record.statusTag = String(data.statusTag || 'DIJUAL').slice(0, 40);
+    record.price = String(data.price || '-').trim();
+    record.location = String(data.location || '').trim();
+    record.lt = String(data.lt || '').slice(0, 80);
+    record.lb = String(data.lb || '').slice(0, 80);
+    record.sertifikat = String(data.sertifikat || '').slice(0, 100);
+    record.zonasi = String(data.zonasi || '').slice(0, 100);
+    record.desc = String(data.desc || '').trim();
+    record.status = String(data.status || 'Diposting').slice(0, 40);
+  }
+  savedAttachments = saveAttachments(folder, attachments, recordType === 'listing');
+  record.attachments = savedAttachments;
+  if (recordType === 'listing') {
+    const image = String(data.image || '');
+    record.image = /^https:\/\/(?:drive\.google\.com|lh3\.googleusercontent\.com|placehold\.co)\//.test(image)
+      ? image
+      : (savedAttachments.filter(function(file) { return file.type.indexOf('image/') === 0; })[0] || {}).viewUrl || '';
+  }
+  return record;
+}
+
+function writeRecord(sheet, rowNumber, record, recordType) {
+  const isListing = recordType === 'listing';
+  const storedType = isListing ? 'Listing Diposting' : 'Pengajuan';
+  const area = isListing ? [record.lt || '', record.lb || ''].join('/') : record.area;
+  const row = [
+    new Date(),
+    storedType,
+    sheetSafeCell(record.id),
+    sheetSafeCell(isListing ? record.title : record.name),
+    sheetSafeCell(isListing ? record.statusTag : record.type),
+    sheetSafeCell(record.category),
+    sheetSafeCell(record.phone || ''),
+    sheetSafeCell(record.location),
+    sheetSafeCell(record.price),
+    sheetSafeCell(area || ''),
+    sheetSafeCell(isListing ? record.desc : record.notes),
+    sheetSafeCell(record.deleted ? 'Dihapus' : record.status),
+    record.attachments.map(function(file) { return file.url; }).join('\n'),
+    JSON.stringify(record)
+  ];
+  if (rowNumber) sheet.getRange(rowNumber, 1, 1, row.length).setValues([row]);
+  else sheet.appendRow(row);
 }
 
 function publicListing(record) {
@@ -264,7 +417,7 @@ function publicSubmissionListing(record) {
     lt: areas[0] ? areas[0].trim() : '',
     lb: areas[1] ? areas[1].trim() : '',
     image: 'https://placehold.co/800x600/0f172a/f59e0b?text=Properti+Industri',
-    desc: record.notes || ''
+    desc: isRequest ? 'Informasi pencarian properti.' : 'Informasi properti yang ditawarkan.'
   });
 }
 
