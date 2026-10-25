@@ -1344,7 +1344,8 @@
         const IS_PUBLIC_HOSTED = /\.github\.io$/i.test(window.location.hostname);
         const DEFAULT_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFtP6zllMGvPkV_90Q8y4EeRBPydr3QSeaIsNxjmjUpGTSJxa6TngZh5sOI1YhdhYB/exec';
         const GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY = 'indoproperti_google_apps_script_url';
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/15EO9psGiL7jvc09Iw5hJKIj7Krylc215HWWnCGfQx94/edit';
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M/edit?gid=0#gid=0';
+        const GOOGLE_SHEET_ID = '1CWt3PTQYh5DNOmXZ7yfMW0Oqp6p3p3KKqCdWnhrEY8M';
 
         function getGoogleAppsScriptUrl() {
             const stored = localStorage.getItem(GOOGLE_APPS_SCRIPT_URL_STORAGE_KEY);
@@ -1757,15 +1758,14 @@
             if (!scriptUrl) return 'not-configured';
 
             try {
-                const health = await fetchSharedData();
-                if (!health || !health.ok || !Array.isArray(health.listings)) {
-                    throw new Error(health && health.error ? health.error : 'Endpoint Google Drive tidak siap.');
-                }
-                driveConnected = true;
-
+                // Jangan menahan pengiriman formulir dengan pemeriksaan GET terlebih dahulu.
+                // Pada hosting publik, GET/JSONP yang lambat atau format respons yang berbeda
+                // sebelumnya bisa menghentikan alur sebelum POST pengajuan terkirim.
                 const clientRequestId = `REQ-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
                 const body = JSON.stringify({
                     source: 'indoproperti',
+                    spreadsheetId: GOOGLE_SHEET_ID,
+                    spreadsheetUrl: GOOGLE_SHEET_URL,
                     action,
                     recordType,
                     skipNotification,
@@ -1781,6 +1781,7 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body
                 });
+                driveConnected = true;
 
                 for (let attempt = 0; attempt < 10; attempt++) {
                     const acknowledgement = await fetchDriveJson({
@@ -2011,48 +2012,92 @@
 
         async function handlePublicSubmit(e) {
             e.preventDefault();
-            if (IS_PUBLIC_HOSTED && !isGoogleSyncEnabled()) {
-                showToast('Form online belum terhubung ke sistem penerimaan. Silakan hubungi kami melalui WhatsApp.', 'error');
+            const form = document.getElementById('public-submission-form');
+            const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            if (!form || !form.reportValidity()) return;
+            if (submitBtn && submitBtn.dataset.busy === 'true') return;
+
+            // reportValidity() menerima input berisi spasi; cek ulang kolom teks wajib.
+            const requiredTextFields = [
+                ['pub-name', 'Nama lengkap'],
+                ['pub-phone', 'Nomor WhatsApp'],
+                ['pub-location', 'Lokasi aset/target']
+            ];
+            const blankRequired = requiredTextFields.find(([id]) => !String(document.getElementById(id)?.value || '').trim());
+            if (blankRequired) {
+                const field = document.getElementById(blankRequired[0]);
+                showToast('Mohon isi ' + blankRequired[1] + ' terlebih dahulu.', 'error');
+                if (field) field.focus();
                 return;
             }
-            const newEntry = {
-                id: createUniqueId('IP'),
-                timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
-                type: document.getElementById('pub-type').value,
-                category: document.getElementById('pub-category').value,
-                name: document.getElementById('pub-name').value,
-                phone: document.getElementById('pub-phone').value,
-                location: document.getElementById('pub-location').value,
-                price: document.getElementById('pub-price').value || '-',
-                area: document.getElementById('pub-area').value || '-',
-                notes: document.getElementById('pub-notes').value || '-',
-                attachments: await Promise.all(Array.from(document.getElementById('pub-files').files).map(fileToDataUrl)),
-                status: 'Baru',
-                isPosted: false
-            };
 
-            if (!isGoogleSyncEnabled()) {
+            if (IS_PUBLIC_HOSTED && !isGoogleSyncEnabled()) {
+                showToast('Form online belum terhubung ke Google Apps Script. Admin perlu memasang URL Web App yang aktif.', 'error');
+                return;
+            }
+
+            const selectedFiles = Array.from(document.getElementById('pub-files').files || []);
+            const maxBytes = 8 * 1024 * 1024;
+            if (selectedFiles.some(file => file.size > maxBytes)) {
+                showToast('Ada file berukuran lebih dari 8 MB. Kecilkan file lalu kirim kembali.', 'error');
+                return;
+            }
+
+            if (submitBtn) {
+                submitBtn.dataset.busy = 'true';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim pengajuan...';
+            }
+
+            try {
+                const newEntry = {
+                    id: createUniqueId('IP'),
+                    timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                    type: document.getElementById('pub-type').value,
+                    category: document.getElementById('pub-category').value,
+                    name: document.getElementById('pub-name').value.trim(),
+                    phone: document.getElementById('pub-phone').value.trim(),
+                    location: document.getElementById('pub-location').value.trim(),
+                    price: document.getElementById('pub-price').value.trim() || '-',
+                    area: document.getElementById('pub-area').value.trim() || '-',
+                    notes: document.getElementById('pub-notes').value.trim() || '-',
+                    attachments: await Promise.all(selectedFiles.map(fileToDataUrl)),
+                    status: 'Baru',
+                    isPosted: false
+                };
+
+                if (!isGoogleSyncEnabled()) {
+                    submissions.unshift(newEntry);
+                    saveSubmissions();
+                    form.reset();
+                    document.getElementById('pub-files-preview').innerHTML = '';
+                    showDriveSyncToast('not-configured', 'Pengajuan disimpan di browser ini saja; belum tersimpan ke Google Sheet.');
+                    return;
+                }
+
+                const syncResult = await syncRecordToGoogleDrive(newEntry, 'submission');
+                if (syncResult !== 'saved') {
+                    showDriveSyncToast(syncResult, 'Pengajuan belum terkonfirmasi tersimpan ke Google Sheet. Data belum dianggap terkirim; silakan coba lagi atau hubungi admin.');
+                    return;
+                }
+
                 submissions.unshift(newEntry);
                 saveSubmissions();
-                // Pengajuan baru berstatus menunggu admin; jangan tampilkan di katalog publik sebelum dikonfirmasi.
-                document.getElementById('public-submission-form').reset();
+                form.reset();
                 document.getElementById('pub-files-preview').innerHTML = '';
-                showDriveSyncToast('not-configured', 'Pengajuan berhasil diterima.');
-                return;
+                showDriveSyncToast(syncResult, 'Pengajuan berhasil diterima dan dikonfirmasi tersimpan.');
+            } catch (error) {
+                console.error('Gagal mengirim formulir pengajuan:', error);
+                showToast('Pengajuan gagal diproses: ' + (error && error.message ? error.message : 'kesalahan tidak diketahui') + '. Data belum dikonfirmasi tersimpan.', 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.dataset.busy = 'false';
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+                    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Formulir Pengajuan';
+                }
             }
-
-            const syncResult = await syncRecordToGoogleDrive(newEntry);
-            if (!isSaveConfirmed(syncResult)) {
-                showDriveSyncToast(syncResult, 'Pengajuan');
-                return;
-            }
-
-            submissions.unshift(newEntry);
-            saveSubmissions();
-            // Listing publik baru dibuat oleh admin melalui tombol Konfirmasi & Posting.
-            document.getElementById('public-submission-form').reset();
-            document.getElementById('pub-files-preview').innerHTML = '';
-            showDriveSyncToast(syncResult, 'Pengajuan berhasil diterima.');
         }
 
         function createPublicListingFromSubmission(entry) {
