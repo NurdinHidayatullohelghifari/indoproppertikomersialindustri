@@ -1003,6 +1003,32 @@
         </div>
     </div>
 
+    <div id="password-recovery-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-800">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-amber-500 text-slate-950 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3 shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">Buat Sandi Baru</h3>
+                <p class="text-xs text-slate-400 mt-1">Gunakan sandi baru untuk akun administrator.</p>
+            </div>
+            <form onsubmit="handlePasswordRecoverySubmit(event)" class="space-y-4">
+                <div id="password-recovery-error" class="hidden p-3 bg-red-950/50 border border-red-800/80 rounded-xl text-xs text-red-400 font-medium" role="alert"></div>
+                <div>
+                    <label for="recovery-password" class="block text-xs font-semibold text-slate-300 mb-1">Sandi baru</label>
+                    <input type="password" id="recovery-password" autocomplete="new-password" minlength="8" placeholder="Minimal 8 karakter" class="w-full text-xs sm:text-sm px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
+                </div>
+                <div>
+                    <label for="recovery-password-confirm" class="block text-xs font-semibold text-slate-300 mb-1">Ulangi sandi baru</label>
+                    <input type="password" id="recovery-password-confirm" autocomplete="new-password" minlength="8" placeholder="Masukkan ulang sandi baru" class="w-full text-xs sm:text-sm px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-amber-500 outline-none" required>
+                </div>
+                <button id="password-recovery-submit" type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all">
+                    Simpan Sandi Baru
+                </button>
+            </form>
+        </div>
+    </div>
+
     <div id="login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-800">
             <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -1305,6 +1331,7 @@
         let adConfigs = {};
         let isLoggedIn = false;
         let driveConnected = false;
+        let passwordRecoveryAccessToken = '';
         const DRIVE_MIGRATION_KEY = 'indoproperti_drive_migration_v1';
 
         const IS_LOCAL_FILE = window.location.protocol === 'file:';
@@ -1347,6 +1374,39 @@
 
         function saveSupabaseSession(session) {
             localStorage.setItem(SUPABASE_SESSION_KEY, JSON.stringify(session));
+        }
+
+        async function initializePasswordRecovery() {
+            const parameters = new URLSearchParams(window.location.hash.slice(1));
+            if (parameters.get('type') !== 'recovery') return;
+
+            const accessToken = parameters.get('access_token');
+            const cleanUrl = `${window.location.pathname}${window.location.search}`;
+            window.history.replaceState(null, '', cleanUrl);
+            if (!accessToken) {
+                showToast('Tautan reset sandi tidak valid atau sudah kedaluwarsa. Minta tautan baru.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+                    headers: {
+                        apikey: SUPABASE_PUBLISHABLE_KEY,
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
+                const user = await response.json();
+                if (!response.ok) throw new Error(user.message || user.msg || 'Tautan reset sandi tidak valid atau sudah kedaluwarsa.');
+                if (String(user.email || '').toLowerCase() !== SUPABASE_ADMIN_EMAIL) {
+                    throw new Error('Tautan ini bukan untuk akun administrator.');
+                }
+                passwordRecoveryAccessToken = accessToken;
+                document.getElementById('password-recovery-modal').classList.remove('hidden');
+                document.getElementById('recovery-password').focus();
+            } catch (error) {
+                console.error('Validasi tautan reset sandi gagal:', error);
+                showToast(error.message || 'Tautan reset sandi tidak dapat digunakan.', 'error');
+            }
         }
 
         async function refreshSupabaseSession() {
@@ -1565,6 +1625,7 @@
             loadSubmissions();
             loadAds();
             updateSystemModeBadge();
+            await initializePasswordRecovery();
             await checkAdminSession();
             if (IS_PUBLIC_HOSTED) {
                 document.getElementById('admin-nav-btn').classList.add('hidden');
@@ -2406,6 +2467,7 @@
             if (emailInput) emailInput.value = '';
             if (passwordInput) passwordInput.value = '';
             if (passwordWrap) passwordWrap.classList.add('hidden');
+            if (passwordInput) passwordInput.required = false;
             if (emailInput) emailInput.disabled = false;
             if (submitBtn) submitBtn.textContent = 'Lanjutkan';
             if (error) { error.classList.add('hidden'); error.classList.remove('flex'); }
@@ -2504,6 +2566,55 @@
                 error.classList.add('flex');
                 passwordInput.value = '';
                 passwordInput.focus();
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function handlePasswordRecoverySubmit(e) {
+            e.preventDefault();
+            const passwordInput = document.getElementById('recovery-password');
+            const confirmInput = document.getElementById('recovery-password-confirm');
+            const error = document.getElementById('password-recovery-error');
+            const submitBtn = document.getElementById('password-recovery-submit');
+            error.classList.add('hidden');
+
+            if (!passwordRecoveryAccessToken) {
+                error.textContent = 'Tautan reset sandi tidak tersedia. Minta tautan baru melalui email.';
+                error.classList.remove('hidden');
+                return;
+            }
+            if (passwordInput.value !== confirmInput.value) {
+                error.textContent = 'Konfirmasi sandi tidak cocok.';
+                error.classList.remove('hidden');
+                confirmInput.focus();
+                return;
+            }
+
+            submitBtn.disabled = true;
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+                    method: 'PUT',
+                    headers: {
+                        apikey: SUPABASE_PUBLISHABLE_KEY,
+                        Authorization: `Bearer ${passwordRecoveryAccessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: passwordInput.value })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || result.msg || 'Sandi baru gagal disimpan.');
+
+                passwordRecoveryAccessToken = '';
+                localStorage.removeItem(SUPABASE_SESSION_KEY);
+                document.getElementById('password-recovery-modal').classList.add('hidden');
+                passwordInput.value = '';
+                confirmInput.value = '';
+                showToast('Sandi baru berhasil disimpan. Silakan login dengan sandi baru.');
+            } catch (recoveryError) {
+                console.error('Pembaruan sandi administrator gagal:', recoveryError);
+                error.textContent = recoveryError.message || 'Sandi baru gagal disimpan. Coba minta tautan reset baru.';
+                error.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
             }
