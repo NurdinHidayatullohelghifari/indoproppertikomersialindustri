@@ -2223,9 +2223,9 @@
             const search = document.getElementById('public-search').value.trim().toLowerCase();
             const categoryFilter = document.getElementById('public-filter-category').value;
             const sortMode = document.getElementById('public-sort')?.value || 'featured';
+            const publishedListings = listings.filter(item => item.published !== false);
 
-            const filtered = listings.filter(item => {
-                if (item.published === false) return false;
+            const filtered = publishedListings.filter(item => {
                 const matchSearch = String(item.title || '').toLowerCase().includes(search) ||
                                     String(item.location || '').toLowerCase().includes(search) ||
                                     String(item.desc || '').toLowerCase().includes(search);
@@ -2251,13 +2251,15 @@
             });
 
             if (sorted.length === 0) {
+                const hasActiveFilters = Boolean(search) || categoryFilter !== 'Semua';
+                const message = publishedListings.length === 0
+                    ? 'Belum ada listing properti yang dipublikasikan. Silakan cek kembali nanti.'
+                    : 'Tidak ada listing properti yang sesuai kriteria pencarian.';
                 container.innerHTML = `
                     <div class="col-span-full text-center py-12 glass-panel rounded-3xl">
                         <i class="fa-solid fa-building-circle-xmark text-4xl text-slate-500 mb-3 block"></i>
-                        <p class="text-sm text-slate-400">Tidak ada listing properti yang sesuai kriteria pencarian.</p>
-                        <button type="button" onclick="document.getElementById('public-search').value=''; document.getElementById('public-filter-category').value='Semua'; document.getElementById('public-sort').value='featured'; renderPublicListings();" class="mt-4 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs">
-                            Reset Filter
-                        </button>
+                        <p class="text-sm text-slate-400">${message}</p>
+                        ${publishedListings.length > 0 && hasActiveFilters ? `<button type="button" onclick="document.getElementById('public-search').value=''; document.getElementById('public-filter-category').value='Semua'; document.getElementById('public-sort').value='featured'; renderPublicListings();" class="mt-4 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs">Reset Filter</button>` : ''}
                     </div>
                 `;
                 return;
