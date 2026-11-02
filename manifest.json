@@ -1,0 +1,26 @@
+{
+  "name": "Indo Properti Komersial & Industri",
+  "short_name": "Indo Properti",
+  "description": "Platform terpercaya untuk pencarian, penawaran, dan pengelolaan properti komersial serta kawasan industri di Indonesia.",
+  "start_url": "/indoproppertikomersialindustri/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "lang": "id-ID",
+  "dir": "ltr",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
