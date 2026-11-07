@@ -765,6 +765,77 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
 }
 </style>
 
+
+<style id="indoproperti-responsive-form-textured-bg">
+/* Latar form dibuat bertekstur berlapis, bukan warna polos; isi dan fungsi form tidak diubah */
+#form-section {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(ellipse at 8% 4%, rgba(255,255,255,.96) 0%, rgba(255,255,255,.55) 18%, transparent 42%),
+    radial-gradient(ellipse at 95% 18%, rgba(91,177,255,.38) 0%, transparent 36%),
+    radial-gradient(ellipse at 12% 92%, rgba(255,174,0,.19) 0%, transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.12) 0px, rgba(255,255,255,.12) 2px, transparent 2px, transparent 13px),
+    linear-gradient(145deg, #eaf5ff 0%, #d7eaff 32%, #f8fcff 58%, #e4f1ff 100%) !important;
+  border: 1px solid rgba(93,160,255,.72) !important;
+  box-shadow:
+    0 18px 42px rgba(3,35,105,.26),
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 0 0 3px rgba(255,255,255,.38) !important;
+}
+#form-section::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: -1 !important;
+  width: 15rem !important;
+  height: 15rem !important;
+  right: -5.5rem !important;
+  top: -6rem !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle, rgba(0,119,255,.17) 0%, rgba(0,119,255,.06) 42%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+#form-section::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: -1 !important;
+  height: .42rem !important;
+  left: 0 !important; right: 0 !important; bottom: 0 !important;
+  background: linear-gradient(90deg,#006dff 0%,#00b8ff 34%,#ffcf00 72%,#ff7900 100%) !important;
+  pointer-events: none !important;
+}
+#form-section h2 {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0,24,80,.38) !important;
+}
+#form-section > div:nth-child(2) {
+  background: linear-gradient(100deg,#073b91 0%,#0068d9 72%,#ff9400 100%) !important;
+  border-radius: .9rem !important;
+  padding: .85rem 1rem !important;
+  border-bottom: 0 !important;
+  box-shadow: 0 5px 14px rgba(0,47,130,.19) !important;
+}
+#form-section p, #form-section .text-slate-500, #form-section .text-slate-600 {
+  color: #102b63 !important;
+}
+#public-submission-form input,
+#public-submission-form select,
+#public-submission-form textarea {
+  background: rgba(255,255,255,.91) !important;
+  border: 1px solid #b8d4fb !important;
+  box-shadow: inset 0 1px 3px rgba(6,49,120,.05) !important;
+}
+@media(max-width:480px) {
+  #form-section {
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(91,177,255,.32), transparent 42%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,.10) 0px, rgba(255,255,255,.10) 2px, transparent 2px, transparent 13px),
+      linear-gradient(145deg,#eaf5ff,#f8fcff 55%,#e4f1ff) !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
 
