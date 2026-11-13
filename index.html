@@ -4,36 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IndoProperti Komersial & Industri | Jual Beli Lahan, Pabrik & Gudang</title>
-    
-    <!-- SEO dasar -->
+    <!-- SEO dasar: sesuaikan deskripsi bila layanan/isi situs berubah -->
     <meta name="description" content="IndoProperti Komersial & Industri membantu pencarian dan penjualan lahan industri, pabrik, gudang logistik, ruko, dan properti komersial di Indonesia.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="googlebot" content="index, follow">
     <meta name="keywords" content="jual lahan industri, lahan industri, jual pabrik, gudang logistik, properti komersial, properti industri, IndoProperti">
     <meta name="author" content="IndoProperti Komersial & Industri">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    
-    <!-- Open Graph (Agar Muncul di WhatsApp, Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="IndoProperti Komersial & Industri">
     <meta property="og:title" content="IndoProperti Komersial & Industri | Jual Beli Lahan, Pabrik & Gudang">
     <meta property="og:description" content="Cari dan ajukan lahan industri, pabrik, gudang logistik, serta properti komersial melalui IndoProperti.">
-    
-    <!-- ⚠️ INI BAGIAN PALING PENTING AGAR GAMBAR MUNCUL ⚠️ -->
-    <meta property="og:image" content="https://nurdinhidayatullohelghifari.github.io/indoproppertikomersialindustri/LogoIndoProperti.png">
-    <meta property="og:url" content="https://nurdinhidayatullohelghifari.github.io/indoproppertikomersialindustri/">
-
-    <!-- Twitter / X Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="IndoProperti Komersial & Industri | Jual Beli Lahan, Pabrik & Gudang">
-    <meta name="twitter:description" content="Cari dan ajukan lahan industri, pabrik, gudang logistik, serta properti komersial melalui IndoProperti.">
-    <meta name="twitter:image" content="https://nurdinhidayatullohelghifari.github.io/indoproppertikomersialindustri/LogoIndoProperti.png">
-
-    <!-- Google Search Console -->
+    <!-- Setelah verifikasi di Google Search Console, ganti NILAI_DIISI_DARI_SEARCH_CONSOLE dengan kode verifikasi milik situs Anda. -->
     <meta name="google-site-verification" content="SSKeX-eNpEEeYPJshr8UvgbxewVT5LERCD5MoqzJ_fA">
-    
-    <script type="application/ld+json">    {
+    <script type="application/ld+json">
+    {
       "@context": "https://schema.org",
       "@type": "RealEstateAgent",
       "name": "IndoProperti Komersial & Industri",
@@ -896,6 +882,7 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
             <a href="#keunggulan" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm">Mengapa Kami</a>
             <a href="#form-section" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm">Form Pengajuan</a>
             <a href="#kontak" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm">Kontak</a>
+            <a href="https://www.facebook.com/profile.php?id=61596346206396" target="_blank" rel="noopener noreferrer" onclick="toggleMobileMenu()" class="block text-emerald-glow text-sm"><i class="fa-brands fa-facebook mr-2"></i>Facebook IndoProperti</a>
         </div>
     </header>
 
@@ -1759,6 +1746,12 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
             <p class="max-w-xl mx-auto text-slate-400 leading-relaxed">
                 Platform Broker Perantara Jual Beli Pabrik, Pergudangan Logistik, dan Lahan Industri Terverifikasi.
             </p>
+            <div class="flex justify-center">
+                <a href="https://www.facebook.com/profile.php?id=61596346206396" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/10 px-4 py-2.5 font-bold text-blue-300 hover:bg-blue-500/20 transition-colors">
+                    <i class="fa-brands fa-facebook text-lg"></i> Ikuti Facebook IndoProperti
+                </a>
+            </div>
             <div class="text-[11px] pt-4 border-t border-slate-900">
                 <button type="button" id="footer-admin-login" onclick="openLoginModal()" class="footer-glow font-black tracking-wide cursor-pointer hover:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded px-2 py-1 transition-colors" title="Klik untuk login admin" aria-label="Login administrator melalui teks copyright">
                     © 2026 IndoProperti Komersial & Industri @Nurdin Hidayatulloh el-ghifari.All Rights Reserved
@@ -2739,16 +2732,80 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
                         </div>
                     </div>
 
-                    <div class="p-6 pt-0 flex gap-2">
-                        <button onclick="openPropertyModal('${item.id}')" class="w-1/2 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-colors">
+                    <div class="p-6 pt-0 grid grid-cols-3 gap-2">
+                        <button type="button" onclick="openPropertyModal('${item.id}')" class="min-w-0 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-colors">
                             <i class="fa-solid fa-circle-info"></i> Detail
                         </button>
-                        <a href="https://wa.me/6282126526162?text=${encodeURIComponent(item.statusTag === 'DICARI' ? 'Halo IndoProperti, saya memiliki properti yang sesuai dengan permintaan: ' + item.title : 'Halo IndoProperti, saya berminat dengan unit listing: ' + item.title + ' (' + item.price + ')')}" target="_blank" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-md">
+                        <a href="https://wa.me/6282126526162?text=${encodeURIComponent(item.statusTag === 'DICARI' ? 'Halo IndoProperti, saya memiliki properti yang sesuai dengan permintaan: ' + item.title : 'Halo IndoProperti, saya berminat dengan unit listing: ' + item.title + ' (' + item.price + ')')}" target="_blank" rel="noopener noreferrer" class="min-w-0 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-md">
                             <i class="fa-brands fa-whatsapp text-sm"></i> Chat WA
                         </a>
+                        <button type="button" onclick="shareProperty('${item.id}')" class="min-w-0 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-share-nodes"></i> Bagikan
+                        </button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function shareProperty(id) {
+            const item = listings.find(listing => String(listing.id) === String(id));
+            if (!item) return;
+
+            const shareUrl = window.location.origin + window.location.pathname + '#listing';
+            const shareText = `${item.title} | ${item.statusTag || 'PROPERTI'} | ${item.price || ''} | ${item.location || ''}. Lihat detail katalog IndoProperti Komersial & Industri: ${shareUrl}`;
+            const encodedUrl = encodeURIComponent(shareUrl);
+            const encodedText = encodeURIComponent(shareText);
+
+            // Pada perangkat yang mendukung Web Share, tampilkan menu berbagi bawaan perangkat.
+            if (navigator.share) {
+                navigator.share({
+                    title: item.title,
+                    text: `${item.title} - ${item.price || ''} - ${item.location || ''}`,
+                    url: shareUrl
+                }).catch(error => {
+                    if (error && error.name !== 'AbortError') showToast('Menu berbagi tidak dapat dibuka. Silakan gunakan tautan media sosial.', 'warning');
+                });
+                return;
+            }
+
+            // Fallback desktop: sediakan pilihan jejaring sosial dan salin tautan.
+            const oldMenu = document.getElementById('property-share-menu');
+            if (oldMenu) oldMenu.remove();
+
+            const menu = document.createElement('div');
+            menu.id = 'property-share-menu';
+            menu.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4';
+            menu.innerHTML = `
+                <div class="w-full max-w-sm rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl">
+                    <div class="flex items-center justify-between gap-3 mb-2">
+                        <h3 class="font-extrabold text-white">Bagikan Listing</h3>
+                        <button type="button" aria-label="Tutup" class="text-slate-400 hover:text-white text-xl" onclick="document.getElementById('property-share-menu').remove()">&times;</button>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-4">${safeText(item.title)}</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" class="rounded-xl bg-blue-700 px-3 py-3 text-center text-xs font-bold text-white"><i class="fa-brands fa-facebook mr-1"></i> Facebook</a>
+                        <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/tweet?text=${encodedText}" class="rounded-xl bg-slate-700 px-3 py-3 text-center text-xs font-bold text-white"><i class="fa-brands fa-x-twitter mr-1"></i> X</a>
+                        <a target="_blank" rel="noopener noreferrer" href="https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(shareText)}" class="rounded-xl bg-sky-600 px-3 py-3 text-center text-xs font-bold text-white"><i class="fa-brands fa-telegram mr-1"></i> Telegram</a>
+                        <a target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=${encodedText}" class="rounded-xl bg-emerald-600 px-3 py-3 text-center text-xs font-bold text-white"><i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp</a>
+                    </div>
+                    <button type="button" onclick="copyPropertyShareLink('${String(item.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}')" class="mt-3 w-full rounded-xl border border-slate-600 bg-slate-800 px-3 py-3 text-xs font-bold text-white hover:bg-slate-700"><i class="fa-solid fa-link mr-1"></i> Salin tautan katalog</button>
+                </div>`;
+            menu.addEventListener('click', event => {
+                if (event.target === menu) menu.remove();
+            });
+            document.body.appendChild(menu);
+        }
+
+        async function copyPropertyShareLink(id) {
+            const shareUrl = window.location.origin + window.location.pathname + '#listing';
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                showToast('Tautan katalog berhasil disalin. Bagikan bersama nama listing yang dipilih.', 'success');
+            } catch (error) {
+                window.prompt('Salin tautan katalog ini:', shareUrl);
+            }
+            const menu = document.getElementById('property-share-menu');
+            if (menu) menu.remove();
         }
 
         function openPropertyModal(id) {
