@@ -861,6 +861,10 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
             </nav>
 
             <div class="flex items-center space-x-3">
+                <div class="flex items-center rounded-xl border border-slate-700 bg-slate-900/90 p-1 text-xs font-bold" aria-label="Pilih bahasa / Select language">
+                    <button type="button" id="lang-id" onclick="setSiteLanguage('id')" class="px-2.5 py-1.5 rounded-lg bg-amber-500 text-slate-950" aria-pressed="true">ID</button>
+                    <button type="button" id="lang-en" onclick="setSiteLanguage('en')" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white" aria-pressed="false">EN</button>
+                </div>
                 <button id="admin-nav-btn" onclick="openLoginModal()" class="px-3.5 py-2 text-xs md:text-sm font-semibold rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition-all flex items-center gap-2">
                     <i class="fa-solid fa-user-shield text-amber-400"></i>
                     <span id="nav-login-text">Login Admin</span>
@@ -1166,19 +1170,14 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-3">
-                                    <i class="fa-solid fa-phone-volume text-amber-400 text-lg"></i>
-                                    <div>
-                                        <strong class="block text-white">Telepon / WhatsApp:</strong>
-                                      <a href="https://chat.whatsapp.com/KefMxGTml6NHRYtf2R3VzO?s=sh&p=a&iam=2" target="_blank" class="inline-flex items-center text-amber-400 hover:underline transition-colors duration-200">
-  <!-- Logo WhatsApp (SVG) -->
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="text-green-500 mr-2">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-  </svg>
-  <!-- Teks -->
-  <span class="font-medium">IndoProperti Komersial & Industri</span>
-</a>
-                                </div>
+                                <a href="https://www.facebook.com/profile.php?id=61596346206396" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 hover:text-blue-400 transition-colors" aria-label="Facebook IndoProperti">
+                                    <i class="fa-brands fa-facebook text-blue-400 text-xl"></i>
+                                    <strong class="text-white">Facebook IndoProperti</strong>
+                                </a>
+                                <a href="https://chat.whatsapp.com/KefMxGTml6NHRYtf2R3VzO?s=sh&amp;p=a&amp;iam=2" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 hover:text-emerald-400 transition-colors" aria-label="Grup WhatsApp IndoProperti">
+                                    <i class="fa-brands fa-whatsapp text-emerald-400 text-xl"></i>
+                                    <strong class="text-white">Grup WhatsApp IndoProperti</strong>
+                                </a>
 
                                 <div class="flex items-center gap-3">
                                     <i class="fa-solid fa-envelope text-amber-400 text-lg"></i>
@@ -1189,12 +1188,7 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
                                 </div>
                             </div>
 
-                            <div class="pt-4 border-t border-slate-800">
-                               <a href="https://chat.whatsapp.com/KefMxGTml6NHRYtf2R3VzO?s=sh&p=a&iam=2" target="_blank" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
-    <i class="fa-brands fa-whatsapp text-lg"></i> Konsultasi Cepat via WhatsApp
-</a>
-                                </a>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -4047,5 +4041,62 @@ header.sticky img[alt*="Logo IndoProperti"] { height: 76px !important; max-width
             document.body.removeChild(link);
         }
     </script>
+\n<script>
+/* IndoProperti bilingual interface: Indonesian / English */
+(function () {
+  const translations = {
+    'Beranda':'Home','Kategori':'Categories','Listing Properti':'Property Listings','Mengapa Kami':'Why Choose Us','Form Pengajuan':'Submission Form','Kontak':'Contact','Login Admin':'Admin Login','Jual / Cari Lahan':'Sell / Find Land','Facebook IndoProperti':'IndoProperti on Facebook',
+    'Broker Spesialis Komersial & Industri':'Commercial & Industrial Property Brokerage','Mitra Terpercaya Jual Beli Pabrik, Gudang & Lahan Industri dan Properti Lainnya':'Your Trusted Partner for Buying and Selling Factories, Warehouses, Industrial Land & Other Properties','Solusi profesional bagi investor, pengembang, dan manufaktur. Menjamin proses akuisisi & penjualan aset komersial yang transparan dengan keabsahan legalitas 100% terverifikasi.':'Professional solutions for investors, developers, and manufacturers. We facilitate transparent commercial property acquisitions and sales with verified legal documentation.','Lahan Terjual':'Land Sold','Pabrik & Gudang':'Factories & Warehouses','Legalitas Clear':'Verified Legal Status',
+    'Layanan Responsif':'Responsive Service','Form Titip Jual / Cari Lahan':'Property Sale / Land Search Form','Isi formulir di bawah ini. Admin akan meninjau pengajuan; informasi properti hanya tampil di katalog setelah diterbitkan. Nama dan nomor WhatsApp tetap privat.':'Complete the form below. Our administrator will review your submission. Property details will appear in the catalog only after approval. Your name and WhatsApp number remain private.','Jenis Pengajuan':'Submission Type','Titip Jual Properti':'List a Property for Sale','Cari / Request Lahan':'Search / Request Land','Cari / Request Properti':'Search / Request Property','Kategori Properti':'Property Category','Lahan Industri':'Industrial Land','Bangunan Pabrik':'Factory Building','Gudang Logistik':'Logistics Warehouse','Ruko / Komersial':'Shophouse / Commercial','Lahan Lainnya':'Other Land','Nama Lengkap':'Full Name','Nomor WhatsApp':'WhatsApp Number','Lokasi Aset/Target':'Property / Target Location','Budget / Price (Rp)':'Budget / Price (IDR)','Luas Tanah / Bangunan (m²)':'Land / Building Area (m²)','Deskripsi / Catatan Khusus':'Description / Special Notes','Foto Properti / Dokumen Pendukung':'Property Photos / Supporting Documents','Maksimal 4 foto (gabungan file dan URL), total lampiran maksimal 5 file. Ukuran file maksimal 8 MB.':'Maximum 4 photos (files and URLs combined), up to 5 attachments in total. Maximum file size: 8 MB.','Tambah URL Foto':'Add Photo URL','Gunakan URL HTTPS langsung ke gambar.':'Use a direct HTTPS image URL.','Kirim Formulir Pengajuan':'Submit Application',
+    'Aset Komersial':'Commercial Assets','Spesialisasi Kategori Properti':'Property Category Specialization','Menyediakan berbagai pilihan aset industri dengan spesifikasi standar operasional manufaktur.':'We offer a range of industrial assets suited to manufacturing operational standards.','Tanah matang skala besar dalam kawasan industri (zona merah/kuning) siap bangun.':'Large, development-ready plots in industrial zones (red/yellow zoning).','Pabrik siap pakai dengan daya listrik kVA besar, PBG/IMB Industri, dan izin operasional.':'Ready-to-use factories with high-capacity electricity, industrial building permits, and operating licenses.','Gudang modern, ceiling tinggi, loading dock, akses trailer & kontainer 40ft.':'Modern warehouses with high ceilings, loading docks, and trailer / 40-foot container access.','Gedung perkantoran, ruko strategis pusat kota, showroom, dan lokasi usaha komersial.':'Office buildings, strategic city-centre shophouses, showrooms, and commercial business locations.','Ruko & Komersial':'Shophouses & Commercial',
+    'Katalog Pilihan':'Featured Catalog','Listing Properti Industri Unggulan':'Featured Industrial Property Listings','Semua Kategori':'All Categories','Pabrik':'Factories','Gudang':'Warehouses','Komersial':'Commercial','Urutkan: Unggulan':'Sort: Featured','Unggulan':'Featured','Terbaru':'Newest','Harga: Rendah ke Tinggi':'Price: Low to High','Harga: Tinggi ke Rendah':'Price: High to Low','Lokasi A-Z':'Location A–Z','IndoProperti,':'IndoProperti,','Solusi Properti Terpercaya':'Your Trusted Property Solution','Bersama kami, wujudkan investasi properti industri dan komersial yang menguntungkan dan aman.':'Together, let us build profitable and secure industrial and commercial property investments.','Hubungi Kami':'Contact Us',
+    'Standar Layanan':'Service Standards','Keunggulan Bertransaksi Melalui IndoProperti':'The Advantages of Transacting Through IndoProperti','Verifikasi Legalitas & Zonasi':'Legal & Zoning Verification','Penguji keabsahan Sertifikat (SHM/SHGB), Keterangan Rencana Kota (ITRK/Zonasi Industri), serta kelengkapan PBG/IMB.':'Verification of land certificates, city planning / industrial zoning information, and building permit documentation.','Jaringan Direct Buyer & Investor':'Direct Buyer & Investor Network','Akses cepat langsung ke jaringan buyer investor PMA/PMDN, grup manufaktur, serta pengembang kawasan industri.':'Direct access to foreign and domestic investors, manufacturing groups, and industrial estate developers.','Pendampingan Transaksi PPAT':'Notary & Land Deed Transaction Assistance','Memandu seluruh alur negosiasi, syarat uji kelayakan (due diligence), hingga proses penandatanganan di Notaris/PPAT.':'Guidance throughout negotiations, due diligence, and signing before a notary / land deed official.','Kontak Kantor Operasional':'Operating Office Contact','Alamat Resmi:':'Official Address:','Telepon / WhatsApp:':'Phone / WhatsApp:','Email Pertanyaan:':'Email Inquiries:','Konsultasi Cepat via WhatsApp':'Quick Consultation via WhatsApp','Ikuti Facebook IndoProperti':'Follow IndoProperti on Facebook','© 2026 IndoProperti Komersial & Industri @Nurdin Hidayatulloh el-ghifari.All Rights Reserved':'© 2026 IndoProperti Commercial & Industrial @Nurdin Hidayatulloh el-ghifari. All Rights Reserved',
+    'Detail':'Details','Chat WA':'WhatsApp Chat','Bagikan':'Share','Salin tautan katalog':'Copy catalog link','Tutup':'Close','Batal':'Cancel','Simpan Perubahan':'Save Changes','Simpan & Posting ke Website':'Save & Publish to Website','Simpan Data':'Save Data','Tambah Listing':'Add Listing','Tambah Listing Baru':'Add New Listing','Foto':'Photo','Judul':'Title','Kategori':'Category','Lokasi':'Location','Harga':'Price','Status':'Status','Aksi':'Actions','Cari lokasi, pabrik, gudang...':'Search location, factory, warehouse...'
+  };
+  const reverse = Object.fromEntries(Object.entries(translations).map(([id,en]) => [en,id]));
+  const attrTranslations = {
+    'Cari lokasi, pabrik, gudang...':'Search location, factory, warehouse...',
+    'Masukkan email administrator yang terdaftar.':'Enter the registered administrator email.',
+    'Sandi baru':'New password','Ulangi sandi baru':'Confirm new password'
+  };
+  function translateRoot(root, lang) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node => {
+      const raw=node.nodeValue, trimmed=raw.trim(); if(!trimmed) return;
+      const translated = lang==='en' ? translations[trimmed] : reverse[trimmed];
+      if(translated) node.nodeValue=raw.replace(trimmed,translated);
+    });
+    root.querySelectorAll('[placeholder]').forEach(el => {
+      const val=el.getAttribute('placeholder');
+      const next=lang==='en' ? attrTranslations[val] : Object.keys(attrTranslations).find(k=>attrTranslations[k]===val);
+      if(next) el.setAttribute('placeholder',next);
+    });
+    root.querySelectorAll('option').forEach(el => {
+      const val=el.textContent.trim(); const next=lang==='en' ? translations[val] : reverse[val];
+      if(next) el.textContent=next;
+    });
+  }
+  window.setSiteLanguage = function(lang) {
+    if(!['id','en'].includes(lang)) return;
+    document.documentElement.lang=lang;
+    try { localStorage.setItem('indoproperti-language',lang); } catch(e) {}
+    translateRoot(document.body,lang);
+    document.getElementById('lang-id').className = lang==='id' ? 'px-2.5 py-1.5 rounded-lg bg-amber-500 text-slate-950' : 'px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white';
+    document.getElementById('lang-en').className = lang==='en' ? 'px-2.5 py-1.5 rounded-lg bg-amber-500 text-slate-950' : 'px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white';
+    document.getElementById('lang-id').setAttribute('aria-pressed',String(lang==='id'));
+    document.getElementById('lang-en').setAttribute('aria-pressed',String(lang==='en'));
+  };
+  document.addEventListener('DOMContentLoaded', function(){
+    let lang='id'; try { lang=localStorage.getItem('indoproperti-language') || 'id'; } catch(e) {}
+    window.setSiteLanguage(lang);
+    const listing=document.getElementById('listings-container');
+    if(listing) new MutationObserver(()=>translateRoot(listing,document.documentElement.lang||'id')).observe(listing,{childList:true,subtree:true});
+  });
+})();
+</script>
+
+
+
 </body>
 </html>
